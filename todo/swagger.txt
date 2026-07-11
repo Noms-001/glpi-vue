@@ -1,0 +1,6 @@
+client-id= f4c6de7a270c4e640635f21139a45d4ca4c67f1fdd63123048787d924db6ed11
+client-secret= 2763e21150c6686b2a30b4a3eacdc719807a24df90a258b73e62f6ce2b52d9d5
+
+curl -X POST "http://glpi.local/apirest.php/Document" -H "App-Token: glpi" -H "Session-Token: ek04Y2QzVVhGMzBKY2E2L20vdkREcS9yM2Nhbnd6QUVKSlhOSzF5VkptYjJRMENPekIzb29wRFhWeXhuMkN4SVhUWFRTUXdrVVg5SHZKKzRwdFNuSWZ0TA==" -F 'uploadManifest={"input":{"name":"PC-ADM-001"}}' -F "filename[0]=@C:/Image/PC-ADM-001.png"
+
+curl -X GET "http://glpi.local/apirest.php/initSession" -H "App-Token: glpi" -H "Authorization: user_token glpi"

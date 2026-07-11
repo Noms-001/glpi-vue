@@ -1,0 +1,18 @@
+{
+    "compilerOptions": {
+        "target": "ESNext",
+        "module": "ESNext",
+        "moduleResolution": "Bundler",
+        "checkJs": true,
+        "ignoreDeprecations": "6.0",
+        "types": ["vite/client"]
+    },
+    "include": [
+        "src/**/*",
+        "env.d.ts"
+    ],
+    "exclude": [
+        "node_modules",
+        "dist"
+    ]
+}

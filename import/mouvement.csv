@@ -1,0 +1,8 @@
+ticket,mouvement,valeur,mode
+1,CLOSE,30,
+1,OPEN,35,3
+2,CLOSE,150,
+2,OPEN,7.5,4
+2,CLOSE,0,
+2,OPEN,10,3
+1,CLOSE,100,

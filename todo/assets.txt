@@ -1,0 +1,745 @@
+Appliance : 
+[
+  {
+    "id": 0,
+    "name": "string",
+    "comment": "string",
+    "status": {
+      "id": 0,
+      "name": "string"
+    },
+    "entity": {
+      "id": 0,
+      "name": "string",
+      "completename": "string"
+    },
+    "is_recursive": true,
+    "manufacturer": {
+      "id": 0,
+      "name": "string"
+    },
+    "user": {
+      "id": 0,
+      "name": "string"
+    },
+    "user_tech": {
+      "id": 0,
+      "name": "string"
+    },
+    "contact": "string",
+    "contact_num": "string",
+    "serial": "string",
+    "otherserial": "string",
+    "is_deleted": true,
+    "date_creation": "2026-06-06T15:07:58.526Z",
+    "date_mod": "2026-06-06T15:07:58.526Z",
+    "location": {
+      "id": 0,
+      "name": "string"
+    },
+    "type": {
+      "id": 0,
+      "name": "string"
+    },
+    "group": [
+      {
+        "id": 0,
+        "name": "string"
+      }
+    ],
+    "group_tech": [
+      {
+        "id": 0,
+        "name": "string"
+      }
+    ],
+    "environment": {
+      "id": 0,
+      "name": "string"
+    },
+    "external_id": "string",
+    "is_helpdesk_visible": true
+  }
+]
+
+Certificate :
+[
+  {
+    "id": 0,
+    "name": "string",
+    "comment": "string",
+    "status": {
+      "id": 0,
+      "name": "string"
+    },
+    "entity": {
+      "id": 0,
+      "name": "string",
+      "completename": "string"
+    },
+    "is_recursive": true,
+    "manufacturer": {
+      "id": 0,
+      "name": "string"
+    },
+    "user": {
+      "id": 0,
+      "name": "string"
+    },
+    "user_tech": {
+      "id": 0,
+      "name": "string"
+    },
+    "contact": "string",
+    "contact_num": "string",
+    "serial": "string",
+    "otherserial": "string",
+    "is_deleted": true,
+    "date_creation": "2026-06-06T15:22:06.261Z",
+    "date_mod": "2026-06-06T15:22:06.261Z",
+    "location": {
+      "id": 0,
+      "name": "string"
+    },
+    "type": {
+      "id": 0,
+      "name": "string"
+    },
+    "group": [
+      {
+        "id": 0,
+        "name": "string"
+      }
+    ],
+    "group_tech": [
+      {
+        "id": 0,
+        "name": "string"
+      }
+    ],
+    "template_name": "string",
+    "is_template": true,
+    "dns_name": "string",
+    "dns_suffix": "string",
+    "is_selfsign": true,
+    "date_expiration": "2026-06-06",
+    "command": "string",
+    "certificate_request": "string",
+    "certificate_item": "string"
+  }
+]
+
+Computer :
+[
+  {
+    "id": 0,
+    "name": "string",
+    "comment": "string",
+    "status": {
+      "id": 0,
+      "name": "string"
+    },
+    "entity": {
+      "id": 0,
+      "name": "string",
+      "completename": "string"
+    },
+    "is_recursive": true,
+    "manufacturer": {
+      "id": 0,
+      "name": "string"
+    },
+    "user": {
+      "id": 0,
+      "name": "string"
+    },
+    "user_tech": {
+      "id": 0,
+      "name": "string"
+    },
+    "contact": "string",
+    "contact_num": "string",
+    "serial": "string",
+    "otherserial": "string",
+    "is_deleted": true,
+    "date_creation": "2026-06-06T15:23:08.030Z",
+    "date_mod": "2026-06-06T15:23:08.030Z",
+    "location": {
+      "id": 0,
+      "name": "string"
+    },
+    "type": {
+      "id": 0,
+      "name": "string"
+    },
+    "model": {
+      "id": 0,
+      "name": "string"
+    },
+    "group": [
+      {
+        "id": 0,
+        "name": "string"
+      }
+    ],
+    "group_tech": [
+      {
+        "id": 0,
+        "name": "string"
+      }
+    ],
+    "uuid": "/51f7ea3d-7132-4250-9094-25aa007baccb/i",
+    "network": {
+      "id": 0,
+      "name": "string"
+    },
+    "autoupdatesystem": {
+      "id": 0,
+      "name": "string"
+    },
+    "is_template": false,
+    "template_name": "string",
+    "is_dynamic": false,
+    "ticket_tco": 0,
+    "last_inventory_update": "2026-06-06T15:23:08.031Z",
+    "last_boot": "2026-06-06T15:23:08.031Z"
+  }
+]
+
+Monitor : 
+[
+  {
+    "id": 0,
+    "name": "string",
+    "comment": "string",
+    "status": {
+      "id": 0,
+      "name": "string"
+    },
+    "entity": {
+      "id": 0,
+      "name": "string",
+      "completename": "string"
+    },
+    "is_recursive": true,
+    "manufacturer": {
+      "id": 0,
+      "name": "string"
+    },
+    "user": {
+      "id": 0,
+      "name": "string"
+    },
+    "user_tech": {
+      "id": 0,
+      "name": "string"
+    },
+    "contact": "string",
+    "contact_num": "string",
+    "serial": "string",
+    "otherserial": "string",
+    "is_deleted": true,
+    "date_creation": "2026-06-06T15:24:01.766Z",
+    "date_mod": "2026-06-06T15:24:01.766Z",
+    "location": {
+      "id": 0,
+      "name": "string"
+    },
+    "type": {
+      "id": 0,
+      "name": "string"
+    },
+    "model": {
+      "id": 0,
+      "name": "string"
+    },
+    "group": [
+      {
+        "id": 0,
+        "name": "string"
+      }
+    ],
+    "group_tech": [
+      {
+        "id": 0,
+        "name": "string"
+      }
+    ],
+    "uuid": "/76770e62-72d5-443e-afa3-37e4e1954a15/i",
+    "autoupdatesystem": {
+      "id": 0,
+      "name": "string"
+    },
+    "size": 0,
+    "has_microphone": false,
+    "has_speaker": false,
+    "has_subd": false,
+    "has_bnc": false,
+    "has_dvi": false,
+    "has_pivot": false,
+    "has_hdmi": false,
+    "has_displayport": false,
+    "is_global": false,
+    "is_template": false,
+    "template_name": "string",
+    "ticket_tco": 0,
+    "is_dynamic": false
+  }
+]
+
+NetworkEquipment :
+[
+  {
+    "id": 0,
+    "name": "string",
+    "comment": "string",
+    "status": {
+      "id": 0,
+      "name": "string"
+    },
+    "entity": {
+      "id": 0,
+      "name": "string",
+      "completename": "string"
+    },
+    "is_recursive": true,
+    "manufacturer": {
+      "id": 0,
+      "name": "string"
+    },
+    "user": {
+      "id": 0,
+      "name": "string"
+    },
+    "user_tech": {
+      "id": 0,
+      "name": "string"
+    },
+    "contact": "string",
+    "contact_num": "string",
+    "serial": "string",
+    "otherserial": "string",
+    "is_deleted": true,
+    "date_creation": "2026-06-06T15:24:45.951Z",
+    "date_mod": "2026-06-06T15:24:45.951Z",
+    "location": {
+      "id": 0,
+      "name": "string"
+    },
+    "type": {
+      "id": 0,
+      "name": "string"
+    },
+    "model": {
+      "id": 0,
+      "name": "string"
+    },
+    "group": [
+      {
+        "id": 0,
+        "name": "string"
+      }
+    ],
+    "group_tech": [
+      {
+        "id": 0,
+        "name": "string"
+      }
+    ],
+    "uuid": "/3608ca2b-a3fc-4318-9a49-2495c299bd90/i",
+    "network": {
+      "id": 0,
+      "name": "string"
+    },
+    "autoupdatesystem": {
+      "id": 0,
+      "name": "string"
+    },
+    "ram": 0,
+    "is_template": false,
+    "template_name": "string",
+    "ticket_tco": 0,
+    "is_dynamic": false,
+    "sysdescr": "string",
+    "cpu": 0,
+    "last_inventory_update": "2026-06-06T15:24:45.952Z",
+    "snmp_credential": {
+      "id": 0,
+      "name": "string"
+    }
+  }
+]
+
+Peripheral :
+[
+  {
+    "id": 0,
+    "name": "string",
+    "comment": "string",
+    "status": {
+      "id": 0,
+      "name": "string"
+    },
+    "entity": {
+      "id": 0,
+      "name": "string",
+      "completename": "string"
+    },
+    "is_recursive": true,
+    "manufacturer": {
+      "id": 0,
+      "name": "string"
+    },
+    "user": {
+      "id": 0,
+      "name": "string"
+    },
+    "user_tech": {
+      "id": 0,
+      "name": "string"
+    },
+    "contact": "string",
+    "contact_num": "string",
+    "serial": "string",
+    "otherserial": "string",
+    "is_deleted": true,
+    "date_creation": "2026-06-06T15:26:05.381Z",
+    "date_mod": "2026-06-06T15:26:05.381Z",
+    "location": {
+      "id": 0,
+      "name": "string"
+    },
+    "type": {
+      "id": 0,
+      "name": "string"
+    },
+    "model": {
+      "id": 0,
+      "name": "string"
+    },
+    "group": [
+      {
+        "id": 0,
+        "name": "string"
+      }
+    ],
+    "group_tech": [
+      {
+        "id": 0,
+        "name": "string"
+      }
+    ],
+    "uuid": "/e48a1302-4e5c-417d-a8c1-878b93e6d87f/i",
+    "autoupdatesystem": {
+      "id": 0,
+      "name": "string"
+    },
+    "brand": "string",
+    "is_global": false,
+    "is_template": false,
+    "template_name": "string",
+    "ticket_tco": 0,
+    "is_dynamic": false
+  }
+]
+
+Phone : 
+[
+  {
+    "id": 0,
+    "name": "string",
+    "comment": "string",
+    "status": {
+      "id": 0,
+      "name": "string"
+    },
+    "entity": {
+      "id": 0,
+      "name": "string",
+      "completename": "string"
+    },
+    "is_recursive": true,
+    "manufacturer": {
+      "id": 0,
+      "name": "string"
+    },
+    "user": {
+      "id": 0,
+      "name": "string"
+    },
+    "user_tech": {
+      "id": 0,
+      "name": "string"
+    },
+    "contact": "string",
+    "contact_num": "string",
+    "serial": "string",
+    "otherserial": "string",
+    "is_deleted": true,
+    "date_creation": "2026-06-06T15:27:06.751Z",
+    "date_mod": "2026-06-06T15:27:06.751Z",
+    "location": {
+      "id": 0,
+      "name": "string"
+    },
+    "type": {
+      "id": 0,
+      "name": "string"
+    },
+    "model": {
+      "id": 0,
+      "name": "string"
+    },
+    "group": [
+      {
+        "id": 0,
+        "name": "string"
+      }
+    ],
+    "group_tech": [
+      {
+        "id": 0,
+        "name": "string"
+      }
+    ],
+    "uuid": "/fa86336a-756a-4c1b-b4ec-5bcd37431f71/i",
+    "autoupdatesystem": {
+      "id": 0,
+      "name": "string"
+    },
+    "brand": "string",
+    "power_supply": {
+      "id": 0,
+      "name": "string"
+    },
+    "number_line": "string",
+    "have_headset": false,
+    "have_hp": false,
+    "is_global": false,
+    "is_template": false,
+    "template_name": "string",
+    "ticket_tco": 0,
+    "is_dynamic": false,
+    "last_inventory_update": "2026-06-06T15:27:06.752Z"
+  }
+]
+
+Printer :
+[
+  {
+    "id": 0,
+    "name": "string",
+    "comment": "string",
+    "status": {
+      "id": 0,
+      "name": "string"
+    },
+    "entity": {
+      "id": 0,
+      "name": "string",
+      "completename": "string"
+    },
+    "is_recursive": true,
+    "manufacturer": {
+      "id": 0,
+      "name": "string"
+    },
+    "user": {
+      "id": 0,
+      "name": "string"
+    },
+    "user_tech": {
+      "id": 0,
+      "name": "string"
+    },
+    "contact": "string",
+    "contact_num": "string",
+    "serial": "string",
+    "otherserial": "string",
+    "is_deleted": true,
+    "date_creation": "2026-06-06T15:27:42.551Z",
+    "date_mod": "2026-06-06T15:27:42.551Z",
+    "location": {
+      "id": 0,
+      "name": "string"
+    },
+    "type": {
+      "id": 0,
+      "name": "string"
+    },
+    "model": {
+      "id": 0,
+      "name": "string"
+    },
+    "group": [
+      {
+        "id": 0,
+        "name": "string"
+      }
+    ],
+    "group_tech": [
+      {
+        "id": 0,
+        "name": "string"
+      }
+    ],
+    "uuid": "/f4806162-cce8-44b9-8cb3-279b33a88171/i",
+    "network": {
+      "id": 0,
+      "name": "string"
+    },
+    "autoupdatesystem": {
+      "id": 0,
+      "name": "string"
+    },
+    "has_serial": false,
+    "has_parallel": false,
+    "has_usb": false,
+    "has_wifi": false,
+    "has_ethernet": false,
+    "is_global": false,
+    "is_template": false,
+    "template_name": "string",
+    "ticket_tco": 0,
+    "is_dynamic": false,
+    "sysdescr": "string",
+    "last_inventory_update": "2026-06-06T15:27:42.552Z",
+    "snmp_credential": {
+      "id": 0,
+      "name": "string"
+    }
+  }
+]
+
+SoftwareLicense : 
+[
+  {
+    "id": 0,
+    "name": "string",
+    "comment": "string",
+    "status": {
+      "id": 0,
+      "name": "string"
+    },
+    "entity": {
+      "id": 0,
+      "name": "string",
+      "completename": "string"
+    },
+    "is_recursive": true,
+    "manufacturer": {
+      "id": 0,
+      "name": "string"
+    },
+    "user": {
+      "id": 0,
+      "name": "string"
+    },
+    "user_tech": {
+      "id": 0,
+      "name": "string"
+    },
+    "contact": "string",
+    "contact_num": "string",
+    "serial": "string",
+    "otherserial": "string",
+    "is_deleted": true,
+    "date_creation": "2026-06-06T15:42:22.718Z",
+    "date_mod": "2026-06-06T15:42:22.718Z",
+    "location": {
+      "id": 0,
+      "name": "string"
+    },
+    "type": {
+      "id": 0,
+      "name": "string"
+    },
+    "group": [
+      {
+        "id": 0,
+        "name": "string"
+      }
+    ],
+    "group_tech": [
+      {
+        "id": 0,
+        "name": "string"
+      }
+    ],
+    "completename": "string",
+    "level": 0
+  }
+]
+
+Unmanaged :
+[
+  {
+    "id": 0,
+    "name": "string",
+    "comment": "string",
+    "status": {
+      "id": 0,
+      "name": "string"
+    },
+    "entity": {
+      "id": 0,
+      "name": "string",
+      "completename": "string"
+    },
+    "is_recursive": true,
+    "manufacturer": {
+      "id": 0,
+      "name": "string"
+    },
+    "user": {
+      "id": 0,
+      "name": "string"
+    },
+    "user_tech": {
+      "id": 0,
+      "name": "string"
+    },
+    "contact": "string",
+    "contact_num": "string",
+    "serial": "string",
+    "otherserial": "string",
+    "is_deleted": true,
+    "date_creation": "2026-06-06T15:43:32.510Z",
+    "date_mod": "2026-06-06T15:43:32.510Z",
+    "group": [
+      {
+        "id": 0,
+        "name": "string"
+      }
+    ],
+    "group_tech": [
+      {
+        "id": 0,
+        "name": "string"
+      }
+    ],
+    "network": {
+      "id": 0,
+      "name": "string"
+    },
+    "autoupdatesystem": {
+      "id": 0,
+      "name": "string"
+    },
+    "is_dynamic": false,
+    "sysdescr": "string",
+    "agent": {
+      "id": 0,
+      "name": "string"
+    },
+    "itemtype": "string",
+    "accepted": true,
+    "is_hub": true,
+    "ip": "string",
+    "snmp_credential": {
+      "id": 0,
+      "name": "string"
+    },
+    "last_inventory_update": "2026-06-06T15:43:32.510Z"
+  }
+]

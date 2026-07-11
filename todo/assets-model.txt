@@ -1,0 +1,126 @@
+ComputerModel :
+[
+  {
+    "id": 0,
+    "name": "string",
+    "comment": "string",
+    "product_number": "string",
+    "weight": 0,
+    "rack_units": 1,
+    "depth": 1,
+    "power_connections": 0,
+    "power_consumption": 0,
+    "is_half_rack": false,
+    "picture_front": "string",
+    "picture_rear": "string",
+    "pictures": [
+      "string"
+    ],
+    "date_creation": "2026-06-07T14:59:31.299Z",
+    "date_mod": "2026-06-07T14:59:31.299Z"
+  }
+]
+
+MonitorModel :
+[
+  {
+    "id": 0,
+    "name": "string",
+    "comment": "string",
+    "product_number": "string",
+    "weight": 0,
+    "rack_units": 1,
+    "depth": 1,
+    "power_connections": 0,
+    "power_consumption": 0,
+    "is_half_rack": false,
+    "picture_front": "string",
+    "picture_rear": "string",
+    "pictures": [
+      "string"
+    ],
+    "date_creation": "2026-06-07T15:00:27.756Z",
+    "date_mod": "2026-06-07T15:00:27.756Z"
+  }
+]
+
+
+NetworkEquipmentModel : 
+[
+  {
+    "id": 0,
+    "name": "string",
+    "comment": "string",
+    "product_number": "string",
+    "weight": 0,
+    "rack_units": 1,
+    "depth": 1,
+    "power_connections": 0,
+    "power_consumption": 0,
+    "is_half_rack": false,
+    "picture_front": "string",
+    "picture_rear": "string",
+    "pictures": [
+      "string"
+    ],
+    "date_creation": "2026-06-07T15:01:13.387Z",
+    "date_mod": "2026-06-07T15:01:13.387Z"
+  }
+]
+
+PeripheralModel :
+[
+  {
+    "id": 0,
+    "name": "string",
+    "comment": "string",
+    "product_number": "string",
+    "weight": 0,
+    "rack_units": 1,
+    "depth": 1,
+    "power_connections": 0,
+    "power_consumption": 0,
+    "is_half_rack": false,
+    "picture_front": "string",
+    "picture_rear": "string",
+    "pictures": [
+      "string"
+    ],
+    "date_creation": "2026-06-07T15:02:24.524Z",
+    "date_mod": "2026-06-07T15:02:24.524Z"
+  }
+]
+
+PhoneModel :
+[
+  {
+    "id": 0,
+    "name": "string",
+    "comment": "string",
+    "product_number": "string",
+    "picture_front": "string",
+    "picture_rear": "string",
+    "pictures": [
+      "string"
+    ],
+    "date_creation": "2026-06-07T15:02:58.454Z",
+    "date_mod": "2026-06-07T15:02:58.454Z"
+  }
+]
+
+PrinterModel : 
+[
+  {
+    "id": 0,
+    "name": "string",
+    "comment": "string",
+    "product_number": "string",
+    "picture_front": "string",
+    "picture_rear": "string",
+    "pictures": [
+      "string"
+    ],
+    "date_creation": "2026-06-07T15:03:50.601Z",
+    "date_mod": "2026-06-07T15:03:50.601Z"
+  }
+]
