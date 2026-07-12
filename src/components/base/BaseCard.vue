@@ -76,6 +76,10 @@ const props = defineProps({
         type: Boolean,
         default: false
     },
+    clickable: {
+        type: Boolean,
+        default: false
+    },
     customClass: {
         type: [String, Array, Object],
         default: ''
@@ -92,11 +96,11 @@ const handleActionClick = (event) => {
 const badgeItems = computed(() => {
     return props.badges.map((badge) => {
         if (typeof badge === 'string') {
-            return { label: badge, variant: 'secondary' }
+            return { label: badge, variant: 'default' }
         }
         return {
             label: badge.label || '',
-            variant: badge.variant || 'secondary',
+            variant: badge.variant || 'default',
             icon: badge.icon || ''
         }
     })
@@ -104,38 +108,20 @@ const badgeItems = computed(() => {
 
 const variantClasses = computed(() => {
     const variants = {
-        primary: 'border-primary',
-        secondary: 'border-info',
-        success: 'border-success',
-        danger: 'border-danger'
+        primary: 'card-accent-primary',
+        success: 'card-accent-success',
+        danger: 'card-accent-danger',
+        warning: 'card-accent-warning',
+        default: ''
     }
     return variants[props.variant] || ''
 })
 
-const sizeClasses = computed(() => {
-    const sizes = {
-        sm: 'rounded-3',
-        lg: 'rounded-4'
-    }
-    return sizes[props.size] || ''
-})
-
-const badgeVariantClasses = (variant) => {
-    const variants = {
-        primary: 'bg-primary bg-opacity-10 text-primary',
-        success: 'bg-success bg-opacity-10 text-success',
-        danger: 'bg-danger bg-opacity-10 text-danger',
-        warning: 'bg-warning bg-opacity-10 text-warning',
-        secondary: 'bg-secondary bg-opacity-10 text-secondary'
-    }
-    return variants[variant] || variants.secondary
-}
-
 const trendVariantClasses = computed(() => {
     const variants = {
-        positive: 'bg-success bg-opacity-10 text-success',
-        negative: 'bg-danger bg-opacity-10 text-danger',
-        neutral: 'bg-secondary bg-opacity-10 text-secondary'
+        positive: 'trend-positive',
+        negative: 'trend-negative',
+        neutral: 'trend-neutral'
     }
     return variants[props.trendType] || variants.neutral
 })
@@ -144,106 +130,137 @@ const hasValue = computed(() => props.value !== '' && props.value !== null && pr
 
 const hasPrice = computed(() => props.price !== '' && props.price !== null && props.price !== undefined)
 
-const showValueSection = computed(() => hasValue.value || props.label || props.trend || props.icon || badgeItems.value.length > 0)
+const showValueSection = computed(() => hasValue.value || props.label || props.icon)
 
 const showPriceSection = computed(() => props.price || props.oldPrice)
 
 const handleClick = () => {
-    if (!props.disabled && !props.loading) {
+    if (props.clickable && !props.disabled && !props.loading) {
         emit('click')
     }
 }
 </script>
 
 <template>
-    <article :class="[
-        'card h-100 position-relative overflow-hidden',
-        variantClasses,
-        sizeClasses,
-        { 'opacity-50': disabled, 'pointer-events-none': loading },
-        customClass
-    ]" @click="handleClick" role="button" :aria-disabled="disabled || loading">
-        <div v-if="$slots.image || image" class="card-img-top overflow-hidden" style="aspect-ratio: 16 / 9;">
+    <article 
+        :class="[
+            'card-custom',
+            variantClasses,
+            {
+                'card-clickable': clickable,
+                'card-disabled': disabled,
+                'card-loading': loading
+            },
+            customClass
+        ]" 
+        @click="handleClick" 
+        role="article"
+        :aria-disabled="disabled || loading"
+    >
+        <!-- Image en haut -->
+        <div v-if="$slots.image || image" class="card-image-wrapper">
             <slot name="image">
-                <img :src="image" class="w-100 h-100 object-fit-cover" alt="" />
+                <img :src="image" class="card-image" alt="" loading="lazy" />
             </slot>
         </div>
 
+        <!-- Contenu -->
         <template v-if="!loading">
-            <div class="card-body d-flex flex-column gap-3">
-                <div v-if="showValueSection" class="d-flex justify-content-between align-items-start gap-4 flex-wrap">
-                    <div class="d-flex align-items-center gap-3">
-                        <span v-if="icon"
-                            :class="['d-inline-flex align-items-center justify-content-center rounded-3 bg-primary bg-opacity-10 text-primary', icon]"
-                            style="padding: 20px; font-size: 25px;"></span>
+            <div class="card-body">
+                <!-- Section Valeur / Icône / Label -->
+                <div v-if="showValueSection" class="card-header-section">
+                    <div class="card-header-left">
+                        <!-- Icône -->
+                        <div v-if="icon" class="card-icon">
+                            <i :class="icon"></i>
+                        </div>
 
-                        <div class="d-flex flex-column gap-1">
+                        <div class="card-header-text">
+                            <!-- Label -->
                             <slot name="label">
-                                <span v-if="label"
-                                    class="text-secondary-emphasis small fw-semibold text-uppercase tracking-wide">{{ label }}</span>
+                                <span v-if="label" class="card-label">{{ label }}</span>
                             </slot>
 
+                            <!-- Valeur -->
                             <slot name="value">
-                                <span v-if="value !== ''" class="display-6 fw-bold lh-1">{{ value }}</span>
+                                <span v-if="hasValue" class="card-value">{{ value }}</span>
                             </slot>
                         </div>
                     </div>
 
-                    <div class="d-flex align-items-center">
-                        <slot name="trend">
-                            <span v-if="trend" :class="['badge rounded-pill px-3 py-2 fw-semibold', trendVariantClasses]">{{ trend }}</span>
-                        </slot>
-                    </div>
+                    <!-- Trend -->
+                    <slot name="trend">
+                        <span v-if="trend" :class="['card-trend', trendVariantClasses]">
+                            <i v-if="trendType === 'positive'" class="bi bi-arrow-up-right"></i>
+                            <i v-else-if="trendType === 'negative'" class="bi bi-arrow-down-right"></i>
+                            {{ trend }}
+                        </span>
+                    </slot>
                 </div>
 
-                <div v-if="badgeItems.length && !$slots.badges" class="d-flex flex-wrap gap-2">
-                    <span v-for="(badge, index) in badgeItems" :key="index"
-                        :class="['badge rounded-pill px-3 py-2 fw-bold d-inline-flex align-items-center gap-2', badgeVariantClasses(badge.variant)]">
+                <!-- Badges -->
+                <div v-if="badgeItems.length && !$slots.badges" class="card-badges">
+                    <span 
+                        v-for="(badge, index) in badgeItems" 
+                        :key="index"
+                        :class="['badge-custom', `badge-${badge.variant}`]"
+                    >
                         <i v-if="badge.icon" :class="badge.icon"></i>
                         {{ badge.label }}
                     </span>
                 </div>
 
-                <slot name="badges">
-                    <template v-if="false"></template>
-                </slot>
+                <slot name="badges"></slot>
 
-                <div class="d-flex flex-column gap-3">
-                    <div class="d-flex flex-column gap-2">
-                        <slot name="title">
-                            <h3 v-if="title" class="h5 fw-bold mb-0">{{ title }}</h3>
-                        </slot>
-
-                        <slot name="subtitle">
-                            <p v-if="subtitle" class="card-subtitle mb-0 small">{{ subtitle }}</p>
-                        </slot>
-                    </div>
-
-                    <slot name="description">
-                        <p v-if="description" class="text-secondary mb-0 lh-base small">{{ description }}</p>
+                <!-- Contenu principal -->
+                <div class="card-content">
+                    <!-- Titre -->
+                    <slot name="title">
+                        <h3 v-if="title" class="card-title">{{ title }}</h3>
                     </slot>
 
-                    <div v-if="showPriceSection" class="d-flex align-items-center gap-3 flex-wrap">
-                        <span v-if="price" class="h4 fw-bold mb-0">{{ price }}</span>
-                        <span v-if="oldPrice" class="text-secondary-emphasis text-decoration-line-through small mb-0">{{ oldPrice }}</span>
+                    <!-- Sous-titre -->
+                    <slot name="subtitle">
+                        <p v-if="subtitle" class="card-subtitle">{{ subtitle }}</p>
+                    </slot>
+
+                    <!-- Description -->
+                    <slot name="description">
+                        <p v-if="description" class="card-description">{{ description }}</p>
+                    </slot>
+
+                    <!-- Prix -->
+                    <div v-if="showPriceSection" class="card-pricing">
+                        <span v-if="price" class="card-price">{{ price }}</span>
+                        <span v-if="oldPrice" class="card-old-price">{{ oldPrice }}</span>
                     </div>
 
+                    <!-- Slot par défaut -->
                     <slot />
                 </div>
 
-                <div v-if="$slots.actions || actionLabel" class="d-flex flex-wrap gap-2">
+                <!-- Actions -->
+                <div v-if="$slots.actions || actionLabel" class="card-actions">
                     <slot name="actions">
-                        <BaseButton v-if="actionLabel" :label="actionLabel" :variant="actionVariant" :disabled="disabled"
-                            @click="handleActionClick" />
+                        <BaseButton 
+                            v-if="actionLabel" 
+                            :label="actionLabel" 
+                            :variant="actionVariant" 
+                            :disabled="disabled"
+                            size="sm"
+                            @click="handleActionClick" 
+                        />
                     </slot>
                 </div>
 
-                <div v-if="$slots.footer" class="pt-2 border-top">
+                <!-- Footer -->
+                <div v-if="$slots.footer" class="card-footer">
                     <slot name="footer" />
                 </div>
             </div>
         </template>
 
+        <!-- État de chargement -->
         <template v-else>
             <div class="card-body card-skeleton">
                 <div class="skeleton skeleton-label"></div>
@@ -257,73 +274,348 @@ const handleClick = () => {
 </template>
 
 <style scoped>
-.card {
-    border: none;
-    border-radius: var(--radius-xl);
+/* ============ BASE CARD ============ */
+.card-custom {
     background: var(--card-bg);
-    transition: transform var(--transition-normal), box-shadow var(--transition-normal);
-    box-shadow: var(--shadow-sm);
-}
-
-.card:hover {
-    transform: translateY(-3px);
-    box-shadow: var(--shadow-md);
-}
-
-.object-fit-cover {
-    object-fit: cover;
-}
-
-.card-body {
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    box-shadow: var(--shadow-card);
+    overflow: hidden;
+    transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+    height: 100%;
     display: flex;
     flex-direction: column;
-    gap: 1rem;
 }
 
-.card h3 {
-    margin: 0;
-    color: var(--text-color);
+/* ============ VARIANTS ============ */
+.card-accent-primary {
+    border-left: 3px solid var(--brand-green);
 }
 
-.card-body,
-.card-body p,
-.card-body span,
-.card-body h3,
-.card-subtitle {
-    color: var(--text-color);
+.card-accent-success {
+    border-left: 3px solid var(--success-color);
 }
 
-.card-subtitle,
-.card .text-secondary-emphasis,
-.card .text-secondary {
-    color: var(--text-muted-custom) !important;
+.card-accent-danger {
+    border-left: 3px solid var(--danger-color);
 }
 
-.badge {
-    font-weight: 600;
+.card-accent-warning {
+    border-left: 3px solid var(--accent-orange);
 }
 
-.card-img-top {
-    border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+/* ============ STATES ============ */
+.card-clickable {
+    cursor: pointer;
+}
+
+.card-clickable:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+    border-color: var(--brand-green);
+}
+
+.card-disabled {
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+.card-loading {
+    pointer-events: none;
+}
+
+/* ============ IMAGE ============ */
+.card-image-wrapper {
+    aspect-ratio: 16 / 9;
     overflow: hidden;
+    border-bottom: 1px solid var(--border-color);
 }
 
-.stat-card {
-    min-height: 180px;
-    padding: 1rem;
+.card-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.4s ease;
 }
 
-.stat-card .card-body {
+.card-custom:hover .card-image {
+    transform: scale(1.05);
+}
+
+/* ============ BODY ============ */
+.card-body {
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    flex: 1;
+}
+
+/* ============ HEADER SECTION ============ */
+.card-header-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.card-header-left {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.card-icon {
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    background: var(--pill-bg);
+    display: flex;
+    align-items: center;
     justify-content: center;
+    font-size: 1.15rem;
+    color: var(--brand-green);
+    flex-shrink: 0;
+    position: relative;
 }
 
-.stat-card .display-6 {
-    font-size: clamp(2rem, 3vw, 3rem);
+.card-header-text {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
 }
 
-@media (prefers-color-scheme: dark) {
-    .card {
-        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+.card-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-muted);
+}
+
+.card-value {
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--text-main);
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+}
+
+/* ============ TREND ============ */
+.card-trend {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 6px 12px;
+    border-radius: 999px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.trend-positive {
+    background: rgba(16, 185, 129, 0.1);
+    color: var(--success-color);
+}
+
+.trend-negative {
+    background: rgba(239, 68, 68, 0.1);
+    color: var(--danger-color);
+}
+
+.trend-neutral {
+    background: var(--pill-bg);
+    color: var(--text-muted);
+}
+
+/* ============ BADGES ============ */
+.card-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.badge-custom {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 12px;
+    border-radius: 999px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    background: var(--pill-bg);
+    color: var(--text-main);
+    white-space: nowrap;
+}
+
+.badge-primary {
+    background: rgba(14, 59, 54, 0.1);
+    color: var(--brand-green);
+}
+
+.badge-success {
+    background: rgba(16, 185, 129, 0.1);
+    color: var(--success-color);
+}
+
+.badge-danger {
+    background: rgba(239, 68, 68, 0.1);
+    color: var(--danger-color);
+}
+
+.badge-warning {
+    background: rgba(244, 169, 80, 0.15);
+    color: var(--accent-orange);
+}
+
+/* ============ CONTENT ============ */
+.card-content {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    flex: 1;
+}
+
+.card-title {
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: var(--text-main);
+    margin: 0;
+    letter-spacing: -0.01em;
+    line-height: 1.3;
+}
+
+.card-subtitle {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    font-weight: 500;
+    margin: 0;
+}
+
+.card-description {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin: 0;
+    line-height: 1.6;
+}
+
+/* ============ PRICING ============ */
+.card-pricing {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.card-price {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--text-main);
+    letter-spacing: -0.02em;
+}
+
+.card-old-price {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    text-decoration: line-through;
+}
+
+/* ============ ACTIONS ============ */
+.card-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    padding-top: 8px;
+}
+
+/* ============ FOOTER ============ */
+.card-footer {
+    padding-top: 16px;
+    margin-top: auto;
+    border-top: 1px solid var(--border-color);
+}
+
+/* ============ SKELETON LOADING ============ */
+.card-skeleton {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 24px;
+}
+
+.skeleton {
+    position: relative;
+    overflow: hidden;
+    background: var(--skeleton-bg);
+    border-radius: 8px;
+}
+
+.skeleton::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        var(--skeleton-highlight),
+        transparent
+    );
+    transform: translateX(-100%);
+    animation: skeleton-shimmer 1.4s infinite;
+}
+
+.skeleton-label {
+    height: 12px;
+    width: 40%;
+}
+
+.skeleton-value {
+    height: 24px;
+    width: 60%;
+}
+
+.skeleton-line {
+    height: 14px;
+    width: 100%;
+}
+
+.skeleton-line.short {
+    width: 65%;
+}
+
+@keyframes skeleton-shimmer {
+    0% {
+        transform: translateX(-100%);
+    }
+    100% {
+        transform: translateX(100%);
+    }
+}
+
+/* ============ RESPONSIVE ============ */
+@media (max-width: 768px) {
+    .card-body {
+        padding: 18px;
+        gap: 12px;
+    }
+    
+    .card-value {
+        font-size: 1.6rem;
+    }
+    
+    .card-icon {
+        width: 40px;
+        height: 40px;
+        font-size: 1rem;
+    }
+    
+    .card-title {
+        font-size: 1rem;
+    }
+    
+    .card-price {
+        font-size: 1.3rem;
     }
 }
 </style>

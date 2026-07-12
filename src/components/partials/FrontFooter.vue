@@ -1,16 +1,28 @@
 <template>
-    <footer class="front-footer py-4 px-4 mt-auto border-top bg-body-tertiary">
-        <div class="d-flex flex-column flex-md-row justify-content-between align-items-center gap-2">
-            <span class="text-muted-custom">© 2026 GLPI Frontoffice</span>
-            <span class="text-muted-custom">Built with Vue 3 and Bootstrap 5</span>
-        </div>
+    <!-- Footer minimaliste intégré dans le flux -->
+    <footer class="front-footer">
+        <span>© 2026 GLPI Dashboard</span>
+        <span>Powered by Vue 3 & Bootstrap 5</span>
     </footer>
 </template>
 
 <style scoped>
 .front-footer {
-    font-size: 0.9rem;
-    background-color: var(--bg-color) !important;
-    border-color: var(--border-color) !important;
+    display: flex;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding: 1rem 1.75rem;
+    background: var(--card-bg);
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    border-top: 1px solid var(--border-color);
+    margin-top: auto;
+}
+
+@media (max-width: 720px) {
+    .front-footer {
+        flex-direction: column;
+        align-items: flex-start;
+    }
 }
 </style>

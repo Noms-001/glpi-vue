@@ -74,7 +74,7 @@ const props = defineProps({
   }
 })
 
-const sizeClass = computed(() => `base-input-${props.size}`)
+const sizeClass = computed(() => `input-${props.size}`)
 
 const emit = defineEmits([
   'update:modelValue',
@@ -84,6 +84,7 @@ const emit = defineEmits([
 
 const showPassword = ref(false)
 const isDragging = ref(false)
+const isFocused = ref(false)
 /** @type {import('vue').Ref<HTMLInputElement | null>} */
 const fileInput = ref(null)
 
@@ -135,7 +136,6 @@ const handleCheckableChange = (event) => {
     const updatedArray = [...props.modelValue]
     const itemToToggle = props.value
     const index = updatedArray.findIndex(item => {
-      // Comparer les objets par référence ou par leur sérialisation JSON
       if (typeof itemToToggle === 'object' && typeof item === 'object') {
         return JSON.stringify(item) === JSON.stringify(itemToToggle)
       }
@@ -143,10 +143,8 @@ const handleCheckableChange = (event) => {
     })
 
     if (index > -1) {
-      // L'élément existe, le retirer
       updatedArray.splice(index, 1)
     } else {
-      // L'élément n'existe pas, l'ajouter
       updatedArray.push(itemToToggle)
     }
     emit('update:modelValue', updatedArray)
@@ -198,331 +196,560 @@ const removeFile = (index) => {
   const value = props.multiple ? currentFiles : currentFiles[0] || null
   emit('update:modelValue', value)
 }
+
+const handleFocus = () => {
+  isFocused.value = true
+  emit('focus')
+}
+
+const handleBlur = () => {
+  isFocused.value = false
+  emit('blur')
+}
 </script>
 
 <template>
-  <div :class="['base-input-container', customClass]">
-    <label v-if="isCheckable" class="checkable-wrapper">
-      <input :checked="type === 'checkbox' && Array.isArray(modelValue) ? isItemChecked : (modelValue == value)" :type="type" :disabled="disabled" :required="required"
-        @change="handleCheckableChange" />
-      <span>{{ label }}</span>
+  <div :class="['input-container', customClass]">
+    <!-- Checkbox / Radio -->
+    <label v-if="isCheckable" class="checkable-label">
+      <input 
+        :checked="type === 'checkbox' && Array.isArray(modelValue) ? isItemChecked : (modelValue == value)" 
+        :type="type" 
+        :disabled="disabled" 
+        :required="required"
+        class="checkable-input"
+        @change="handleCheckableChange" 
+      />
+      <span class="checkable-indicator">
+        <i v-if="type === 'checkbox'" class="bi bi-check-lg"></i>
+        <i v-else class="checkable-dot"></i>
+      </span>
+      <span class="checkable-text">{{ label }}</span>
     </label>
 
+    <!-- Inputs standards -->
     <template v-else>
-      <label v-if="label" class="base-input-label">
+      <label v-if="label" class="input-label">
         {{ label }}
-        <span v-if="required" class="required">*</span>
+        <span v-if="required" class="required-mark">*</span>
       </label>
 
-      <div class="input-wrapper">
-        <i v-if="icon" :class="['input-icon-left', icon]" />
+      <div :class="['input-wrapper', { 'input-focused': isFocused, 'input-error': error }]">
+        <!-- Icône gauche -->
+        <i v-if="icon" :class="['input-icon left', icon]" />
 
+        <!-- Textarea -->
         <template v-if="type === 'textarea'">
-          <textarea :value="modelValue" :name="name" :placeholder="placeholder" :disabled="disabled"
-            :readonly="readonly" :required="required"
-            :class="[sizeClass, 'base-input', 'base-textarea', { 'base-input-error': error }]"
-            @input="updateValue($event)" @blur="$emit('blur')" @focus="$emit('focus')" />
+          <textarea 
+            :value="modelValue" 
+            :name="name" 
+            :placeholder="placeholder" 
+            :disabled="disabled"
+            :readonly="readonly" 
+            :required="required"
+            :class="['input-field', 'textarea-field', sizeClass]"
+            @input="updateValue($event)" 
+            @blur="handleBlur" 
+            @focus="handleFocus" 
+          />
         </template>
 
+        <!-- File Upload -->
         <template v-else-if="type === 'file'">
-          <div class="file-dropzone" :class="{ 'file-dragging': isDragging }" @click="triggerFileSelect"
-            @dragover.prevent="handleDragOver" @dragenter.prevent="handleDragOver" @dragleave.prevent="handleDragLeave"
-            @drop.prevent="handleDrop">
+          <div 
+            class="file-dropzone" 
+            :class="{ 'file-dragging': isDragging }" 
+            @click="triggerFileSelect"
+            @dragover.prevent="handleDragOver" 
+            @dragenter.prevent="handleDragOver" 
+            @dragleave.prevent="handleDragLeave"
+            @drop.prevent="handleDrop"
+          >
             <div class="drop-icon">
               <i class="bi bi-cloud-arrow-up-fill"></i>
             </div>
-            <div class="drop-content">
+            <div class="drop-text">
               <strong>{{ fileCountLabel }}</strong>
+              <small v-if="accept">Formats acceptés : {{ accept }}</small>
             </div>
           </div>
-          <input ref="fileInput" class="file-input" :type="type" :name="name" :disabled="disabled" :multiple="multiple"
-            :accept="accept" :readonly="readonly" :required="required" @change="updateValue" />
+          <input 
+            ref="fileInput" 
+            class="file-input-hidden" 
+            :type="type" 
+            :name="name" 
+            :disabled="disabled" 
+            :multiple="multiple"
+            :accept="accept" 
+            :readonly="readonly" 
+            :required="required" 
+            @change="updateValue" 
+          />
         </template>
 
+        <!-- Input standard -->
         <template v-else>
-          <input :value="modelValue" :type="inputType" :name="name" :placeholder="placeholder" :disabled="disabled"
+          <input 
+            :value="modelValue" 
+            :type="inputType" 
+            :name="name" 
+            :placeholder="placeholder" 
+            :disabled="disabled"
             :required="required"
-            :class="['base-input', sizeClass, { 'has-left-icon': icon, 'has-right-icon': iconRight, 'base-input-error': error }]"
-            @input="updateValue($event)" @blur="$emit('blur')" @focus="$emit('focus')" />
+            :class="['input-field', sizeClass, { 
+              'has-icon-left': icon, 
+              'has-icon-right': iconRight || type === 'password'
+            }]"
+            @input="updateValue($event)" 
+            @blur="handleBlur" 
+            @focus="handleFocus" 
+          />
         </template>
 
-        <i v-if="iconRight" :class="['input-icon-right', iconRight]" />
+        <!-- Icône droite -->
+        <i v-if="iconRight && type !== 'password'" :class="['input-icon right', iconRight]" />
 
-        <button v-if="type === 'password'" type="button" class="input-icon-right eye-icon"
+        <!-- Toggle password -->
+        <button 
+          v-if="type === 'password'" 
+          type="button" 
+          class="password-toggle"
           @click="showPassword = !showPassword"
-          :aria-label="showPassword ? 'Masquer le mot de passe' : 'Afficher le mot de passe'">
+          :aria-label="showPassword ? 'Masquer le mot de passe' : 'Afficher le mot de passe'"
+        >
           <i :class="showPassword ? 'bi bi-eye-slash' : 'bi bi-eye'" />
         </button>
       </div>
 
+      <!-- File preview -->
       <div v-if="type === 'file' && files.length" class="file-preview">
         <div v-for="(file, index) in files" :key="index" class="file-item">
-          <div class="file-meta-wrap">
+          <div class="file-info">
             <i class="bi bi-file-earmark-fill"></i>
-            <div>
+            <div class="file-meta">
               <strong>{{ file.name }}</strong>
               <span>{{ (file.size / 1024).toFixed(1) }} KB</span>
             </div>
           </div>
-          <button type="button" class="remove-file" @click="removeFile(index)" aria-label="Supprimer le fichier">
+          <button type="button" class="file-remove" @click="removeFile(index)" aria-label="Supprimer le fichier">
             <i class="bi bi-x-lg"></i>
           </button>
         </div>
       </div>
     </template>
 
-    <small v-if="error" class="error-message">{{ error }}</small>
-    <small v-if="helper && !error" class="helper-text mb-3">{{ helper }}</small>
+    <!-- Messages -->
+    <small v-if="error" class="error-message">
+      <i class="bi bi-exclamation-circle"></i> {{ error }}
+    </small>
+    <small v-if="helper && !error" class="helper-text">{{ helper }}</small>
   </div>
 </template>
 
 <style scoped>
-.base-input-container {
+/* ============ CONTAINER ============ */
+.input-container {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: 0.5rem;
 }
 
-.base-input-label {
-  font-size: 0.95rem;
+/* ============ LABEL ============ */
+.input-label {
+  font-size: 0.88rem;
   font-weight: 600;
-  color: var(--text-color);
+  color: var(--text-main);
+  letter-spacing: -0.01em;
 }
 
-.required {
+.required-mark {
   color: var(--danger-color);
-  margin-left: 0.2rem;
+  margin-left: 0.15rem;
 }
 
+/* ============ WRAPPER ============ */
 .input-wrapper {
   position: relative;
+  display: flex;
+  align-items: center;
 }
 
-.base-input,
-.base-textarea {
+/* ============ INPUT FIELD ============ */
+.input-field {
   width: 100%;
-  min-height: 48px;
-  border-radius: var(--radius-lg);
-  border: 1px solid var(--border-color);
-  background: var(--surface-color);
-  color: var(--text-color);
-  transition: border-color var(--transition-fast), box-shadow var(--transition-fast), background var(--transition-fast);
+  background: var(--card-bg);
+  border: 1.5px solid var(--border-color);
+  color: var(--text-main);
+  border-radius: 10px;
+  transition: all 0.2s ease;
+  font-family: var(--font-family);
 }
 
-.base-input-sm {
-  padding: 0.5rem 0.95rem;
-  font-size: 0.92rem;
-  min-height: 40px;
+.input-field::placeholder {
+  color: var(--text-muted);
+  opacity: 0.7;
 }
 
-.base-input-md {
-  padding: 0.75rem 1rem;
-  font-size: 0.95rem;
-  min-height: 48px;
-}
-
-.base-input-lg {
-  padding: 1.15rem 1.1rem;
-  font-size: 1rem;
-  min-height: 56px;
-}
-
-.base-input:focus,
-.base-textarea:focus {
+.input-field:focus {
   outline: none;
-  border-color: var(--primary-color);
-  box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.08);
+  border-color: var(--brand-green);
+  box-shadow: 0 0 0 3px rgba(14, 59, 54, 0.1);
 }
 
-.base-input-error {
+.input-wrapper.input-focused {
+  /* État focus du wrapper */
+}
+
+.input-wrapper.input-error .input-field {
   border-color: var(--danger-color);
 }
 
-.input-icon-left,
-.input-icon-right {
-  position: absolute;
-  inset-block-start: 50%;
-  transform: translateY(-50%);
-  color: var(--text-muted-custom);
-  font-size: 1rem;
+.input-wrapper.input-error .input-field:focus {
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
 }
 
-.input-icon-left {
-  inset-inline-start: 1rem;
+/* Sizes */
+.input-sm {
+  padding: 0.5rem 0.85rem;
+  font-size: 0.85rem;
+  min-height: 38px;
 }
 
-.input-icon-right {
-  inset-inline-end: 1rem;
+.input-md {
+  padding: 0.65rem 1rem;
+  font-size: 0.9rem;
+  min-height: 46px;
 }
 
-.has-left-icon {
-  padding-left: 3rem;
+.input-lg {
+  padding: 0.8rem 1.1rem;
+  font-size: 0.95rem;
+  min-height: 54px;
 }
 
-.has-right-icon {
-  padding-right: 3rem;
+/* Icon spacing */
+.has-icon-left {
+  padding-left: 2.75rem;
 }
 
-.eye-icon {
-  background: transparent;
-  border: none;
-  color: var(--text-muted-custom);
-  position: absolute;
-  inset-inline-end: 0.85rem;
-  inset-block-start: 50%;
-  transform: translateY(-50%);
-  cursor: pointer;
+.has-icon-right {
+  padding-right: 2.75rem;
 }
 
-.base-textarea {
+/* ============ TEXTAREA ============ */
+.textarea-field {
   min-height: 140px;
   resize: vertical;
+  line-height: 1.6;
 }
 
-.checkable-wrapper {
-  display: flex;
-  gap: 0.85rem;
-  align-items: center;
+/* ============ ICONS ============ */
+.input-icon {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-muted);
+  font-size: 1rem;
+  z-index: 2;
+  pointer-events: none;
+  transition: color 0.2s ease;
+}
+
+.input-icon.left {
+  left: 0.9rem;
+}
+
+.input-icon.right {
+  right: 0.9rem;
+}
+
+.input-wrapper:focus-within .input-icon {
+  color: var(--brand-green);
+}
+
+/* ============ PASSWORD TOGGLE ============ */
+.password-toggle {
+  position: absolute;
+  right: 0.65rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
   cursor: pointer;
-  color: var(--text-color);
+  padding: 0.35rem;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  z-index: 2;
 }
 
-.checkable-wrapper input {
-  width: 18px;
-  height: 18px;
+.password-toggle:hover {
+  color: var(--brand-green);
+  background: var(--pill-bg);
 }
 
-.file-dropzone {
-  display: grid;
-  place-items: center;
+/* ============ CHECKABLE (Checkbox / Radio) ============ */
+.checkable-label {
+  display: flex;
+  align-items: center;
   gap: 0.65rem;
-  padding: 1.5rem 1rem;
-  border-radius: var(--radius-xl);
-  background: var(--bg-color);
-  border: 1px dashed var(--border-color);
-  color: var(--text-muted-custom);
+  cursor: pointer;
+  color: var(--text-main);
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.checkable-input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.checkable-indicator {
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--border-color);
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+  color: transparent;
+  background: var(--card-bg);
+}
+
+.checkable-input:checked + .checkable-indicator {
+  background: var(--brand-green);
+  border-color: var(--brand-green);
+  color: #FFFFFF;
+}
+
+.checkable-input:focus + .checkable-indicator {
+  box-shadow: 0 0 0 3px rgba(14, 59, 54, 0.15);
+}
+
+.checkable-indicator i {
+  font-size: 0.75rem;
+  font-weight: bold;
+}
+
+/* Radio specific */
+input[type="radio"] + .checkable-indicator {
+  border-radius: 50%;
+}
+
+input[type="radio"] + .checkable-indicator .checkable-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: transparent;
+  transition: background 0.2s ease;
+}
+
+input[type="radio"]:checked + .checkable-indicator .checkable-dot {
+  background: #FFFFFF;
+}
+
+.checkable-text {
+  user-select: none;
+}
+
+/* ============ FILE DROPZONE ============ */
+.file-dropzone {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 2rem 1.5rem;
+  border-radius: 12px;
+  background: var(--bg);
+  border: 2px dashed var(--border-color);
+  color: var(--text-muted);
   cursor: pointer;
   text-align: center;
-  transition: border-color var(--transition-fast), background var(--transition-fast), transform var(--transition-fast);
+  transition: all 0.25s ease;
 }
 
 .file-dropzone:hover,
 .file-dropzone.file-dragging {
-  border-color: var(--primary-color);
-  background: rgba(79, 70, 229, 0.05);
+  border-color: var(--brand-green);
+  background: var(--brand-green-light);
   transform: translateY(-1px);
 }
 
 .drop-icon {
   width: 52px;
   height: 52px;
-  display: grid;
-  place-items: center;
-  border-radius: 18px;
-  background: rgba(79, 70, 229, 0.12);
-  color: var(--primary-color);
-  font-size: 1.4rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 14px;
+  background: rgba(14, 59, 54, 0.1);
+  color: var(--brand-green);
+  font-size: 1.3rem;
 }
 
-.file-input {
+.drop-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.drop-text strong {
+  font-size: 0.9rem;
+  color: var(--text-main);
+}
+
+.drop-text small {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+
+.file-input-hidden {
   display: none;
 }
 
+/* ============ FILE PREVIEW ============ */
 .file-preview {
-  display: grid;
-  gap: 0.75rem;
-  margin-top: 0.9rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
 }
 
 .file-item {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0.95rem 1rem;
-  border-radius: var(--radius-xl);
-  background: var(--surface-color);
+  padding: 0.75rem 1rem;
+  border-radius: 10px;
+  background: var(--card-bg);
   border: 1px solid var(--border-color);
+  transition: all 0.2s ease;
+}
+
+.file-item:hover {
+  border-color: var(--brand-green);
   box-shadow: var(--shadow-sm);
 }
 
-.helper-text {
-  color: var(--text-muted-custom);
-  font-size: 0.85rem;
-}
-
-.file-meta-wrap {
+.file-info {
   display: flex;
   align-items: center;
-  gap: 0.85rem;
+  gap: 0.75rem;
   min-width: 0;
 }
 
-.file-meta-wrap i {
-  font-size: 1.25rem;
-  color: var(--primary-color);
+.file-info > i {
+  font-size: 1.2rem;
+  color: var(--brand-green);
+  flex-shrink: 0;
 }
 
-.file-meta-wrap strong {
-  display: block;
-  color: var(--text-color);
+.file-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  min-width: 0;
 }
 
-.file-meta-wrap span {
-  display: block;
-  color: var(--text-muted-custom);
-  font-size: 0.9rem;
+.file-meta strong {
+  font-size: 0.85rem;
+  color: var(--text-main);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.remove-file {
+.file-meta span {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+
+.file-remove {
   border: none;
   background: transparent;
-  color: var(--text-muted-custom);
+  color: var(--text-muted);
   cursor: pointer;
-  display: grid;
-  place-items: center;
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  transition: background var(--transition-fast), color var(--transition-fast);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
 }
 
-.remove-file:hover {
-  background: rgba(239, 68, 68, 0.12);
+.file-remove:hover {
+  background: rgba(239, 68, 68, 0.1);
   color: var(--danger-color);
 }
 
+/* ============ MESSAGES ============ */
 .error-message {
   color: var(--danger-color);
+  font-size: 0.8rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.error-message i {
   font-size: 0.85rem;
 }
 
-.base-input[type="color"] {
-  width: 50px;
-  padding: 3px !important;
+.helper-text {
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  font-weight: 400;
 }
 
-.base-input[type="color"]::-webkit-color-swatch {
-    border: none;
-    border-radius: var(--radius-md);
+/* ============ COLOR INPUT ============ */
+.input-field[type="color"] {
+  width: 48px;
+  padding: 0.35rem !important;
+  cursor: pointer;
 }
 
-.base-input[type="color"]::-webkit-color-swatch-wrapper {
-    padding: 0;
+.input-field[type="color"]::-webkit-color-swatch {
+  border: none;
+  border-radius: 6px;
 }
 
-/* Optionnel : aligner la hauteur avec les autres inputs */
-.base-input[type="color"].base-input-sm {
-  padding: 0.3rem;
-  min-height: 40px;
+.input-field[type="color"]::-webkit-color-swatch-wrapper {
+  padding: 0;
 }
 
-.base-input[type="color"].base-input-md {
-  padding: 0.5rem;
-  min-height: 48px;
+/* ============ DISABLED STATE ============ */
+.input-field:disabled,
+.textarea-field:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background: var(--bg);
 }
 
-.base-input[type="color"].base-input-lg {
-  padding: 0.7rem;
-  min-height: 56px;
+/* ============ RESPONSIVE ============ */
+@media (max-width: 768px) {
+  .file-dropzone {
+    padding: 1.5rem 1rem;
+  }
+  
+  .drop-icon {
+    width: 44px;
+    height: 44px;
+    font-size: 1.1rem;
+  }
+  
+  .input-lg {
+    min-height: 48px;
+  }
 }
 </style>

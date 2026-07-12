@@ -11,367 +11,315 @@ const openMobileSidebar = inject('openMobileSidebar')
 </script>
 
 <template>
-    <header class="layout-header">
-        <div class="header-left">
-            <button type="button" class="btn-icon header-menu-btn" @click="openMobileSidebar"
-                aria-label="Ouvrir le menu">
-                <i class="bi bi-list"></i>
-            </button>
-
-            <div class="header-search-wrapper">
-                <BaseInput icon="bi bi-search" v-model="searchQuery" type="search" placeholder="Rechercher..."
-                    customClass="header-search-input" />
+    <header class="topbar">
+        <div class="topbar-brand" @click="openMobileSidebar" id="sidebarToggle">
+            <div class="brand-icon">
+                <img src="../../assets/logo.png" alt="logo glpi" width="40">
+            </div>
+            <div class="brand-text">
+                <div class="brand-name">GLPI Admin</div>
+                <div class="brand-sub">Gestion de parc informatique</div>
             </div>
         </div>
 
-        <div class="header-actions">
-            <BaseButton variant="secondary" size="sm"
-                @click="() => { router.push('/') }"
-                label="Frontoffice"
-            />
+        <div class="search-wrap search-box d-none d-md-block">
+            <i class="bi bi-search search-icon"></i>
+            <input 
+                type="text" 
+                class="form-control" 
+                placeholder="Rechercher..." 
+                v-model="searchQuery"
+            >
+        </div>
 
-            <button type="button" class="btn-icon header-action-btn" @click="toggleTheme" aria-label="Bascule thème">
-                <i :class="theme === 'light' ? 'bi bi-moon-stars' : 'bi bi-sun-fill'"></i>
+        <div class="topbar-right">
+            <button class="btn btn-pill btn-import d-none d-sm-inline-flex" @click="() => { router.push('/backoffice/import') }">
+                <i class="bi bi-upload me-1"></i> Import
+            </button>
+            <button class="btn btn-pill btn-create" @click="() => { router.push('/') }">
+                <i class="bi bi-boxes me-1"></i><span>Frontoffice</span>
             </button>
 
-            <div class="user-menu">
-                <div class="user-avatar">
-                    <img src="https://ui-avatars.com/api/?name=GLPI&background=0D6EFD&color=fff&bold=true" alt="Avatar">
+            <button class="theme-toggle" @click="toggleTheme" :title="theme === 'dark' ? 'Mode clair' : 'Mode sombre'">
+                <i :class="theme === 'dark' ? 'bi bi-sun-fill' : 'bi bi-moon-stars-fill'"></i>
+            </button>
+
+            <div class="user-chip">
+                <img 
+                    src="https://ui-avatars.com/api/?name=GLPI&background=0E3B36&color=fff&bold=true&size=40" 
+                    class="user-avatar" 
+                    alt="Admin GLPI"
+                >
+                <div class="d-none d-md-block">
+                    <div class="user-name">
+                        Administrateur 
+                        <i class="bi bi-patch-check-fill" style="color: var(--brand-green); font-size:0.8rem;"></i>
+                    </div>
+                    <div class="user-email">GLPI Backoffice</div>
                 </div>
-                <div class="user-info">
-                    <span>GLPI</span>
-                    <small>Admin</small>
-                </div>
-                <i class="bi bi-chevron-down user-dropdown-icon"></i>
             </div>
         </div>
 
         <!-- Barre de recherche mobile -->
-        <div class="mobile-search">
-            <BaseInput icon="bi bi-search" v-model="searchQuery" type="search" placeholder="Rechercher..."
-                customClass="mobile-search-input" />
+        <div class="mobile-search d-md-none w-100 mt-2">
+            <i class="bi bi-search search-icon"></i>
+            <input 
+                type="text" 
+                class="form-control" 
+                placeholder="Rechercher..." 
+                v-model="searchQuery"
+            >
         </div>
     </header>
 </template>
 
 <style scoped>
-.layout-header {
+/* ============ TOPBAR ============ */
+.topbar {
+    background: var(--topbar-bg);
+    height: var(--topbar-h);
+    padding: 0 15px;
+    display: flex;
+    align-items: center;
+    gap: 18px;
     position: sticky;
     top: 0;
-    z-index: 900;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 1rem;
-    padding: 0.75rem 1.5rem;
-    background: var(--navbar-bg);
-    border-bottom: 1px solid var(--border-color);
-    box-shadow: var(--shadow-sm, 0 1px 2px 0 rgba(0, 0, 0, 0.05));
-    backdrop-filter: blur(10px);
-    transition: all 0.3s ease;
+    z-index: 100;
+    flex-wrap: wrap;
 }
 
-/* Section gauche */
-.header-left {
+.topbar-brand {
     display: flex;
     align-items: center;
-    gap: 1rem;
-    flex: 1;
-}
-
-/* Bouton menu mobile */
-.header-menu-btn {
-    display: none;
-    align-items: center;
-    justify-content: center;
-    width: 40px;
-    height: 40px;
-    border: none;
-    background: var(--surface-color);
-    border-radius: 12px;
+    gap: 10px;
+    width: var(--sidebar-w);
+    flex-shrink: 0;
+    padding-right: 10px;
+    transition: width .25s ease;
     cursor: pointer;
-    transition: all 0.2s ease;
 }
 
-.header-menu-btn:hover {
-    background: var(--primary-color);
-    color: white;
+.app-shell.collapsed .topbar-brand {
+    width: var(--sidebar-w-collapsed);
 }
 
-.header-menu-btn i {
-    font-size: 1.25rem;
-}
-
-/* Brand */
-.header-brand {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-}
-
-.header-brand-text {
-    display: flex;
-    flex-direction: column;
-    line-height: 1.3;
-}
-
-.header-brand-text strong {
-    font-size: 1rem;
-    font-weight: 700;
-    color: var(--text-color);
-}
-
-.header-brand-text span {
-    font-size: 0.75rem;
-    color: var(--text-muted-custom);
-}
-
-/* Wrapper recherche desktop */
-.header-search-wrapper {
-    flex: 1;
-    max-width: 400px;
-}
-
-.header-search-input {
-    width: 100%;
-}
-
-/* Actions header */
-.header-actions {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-}
-
-.header-action-btn {
-    position: relative;
-    border: none;
-    background: var(--surface-color);
-    color: var(--text-color);
-    width: 40px;
-    height: 40px;
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: all 0.2s ease;
-}
-
-.header-action-btn:hover {
-    background: var(--primary-color);
-    color: white;
-    transform: translateY(-2px);
-}
-
-.notification-badge {
-    position: absolute;
-    top: -4px;
-    right: -4px;
-    background: #ef4444;
-    color: white;
-    font-size: 0.625rem;
-    font-weight: 700;
-    padding: 2px 5px;
+.brand-icon {
+    width: 50px;
+    height: 50px;
     border-radius: 10px;
-    min-width: 18px;
-    height: 18px;
+    background: var(--sidebar-active-bg);
     display: flex;
     align-items: center;
     justify-content: center;
+    color: var(--sidebar-active-text);
+    font-size: 1.1rem;
+    flex-shrink: 0;
+}
+
+.brand-name {
+    font-weight: 800;
+    font-size: 1.02rem;
+    line-height: 1.1;
+    color: #fff;
+    white-space: nowrap;
+}
+
+.brand-sub {
+    font-size: 0.7rem;
+    color: #9AA5AC;
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+.brand-text {
+    overflow: hidden;
+    transition: opacity .2s ease, width .2s ease;
+}
+
+.app-shell.collapsed .brand-text {
+    opacity: 0;
+    width: 0;
+}
+
+/* Zone de recherche */
+.search-wrap {
+    flex: 1;
+    max-width: 480px;
+}
+
+.search-wrap .form-control {
+    background: var(--search-bg);
+    border: none;
+    color: #fff;
+    border-radius: 999px;
+    padding: 10px 18px 10px 42px;
+    font-size: 0.88rem;
+}
+
+.search-wrap .form-control::placeholder {
+    color: var(--search-text);
+}
+
+.search-wrap .form-control:focus {
+    background: var(--search-bg);
+    color: #fff;
+    box-shadow: none;
+    outline: none;
+    border: 1px solid rgba(255,255,255,0.2);
+}
+
+.search-icon {
+    position: absolute;
+    left: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--search-text);
+}
+
+.search-box {
+    position: relative;
+}
+
+/* Partie droite */
+.topbar-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-left: auto;
+}
+
+.btn-pill {
+    border-radius: 999px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    padding: 9px 18px;
+    white-space: nowrap;
+    border: none;
+    display: inline-flex;
+    align-items: center;
+}
+
+.btn-import {
+    background: rgba(255,255,255,0.08);
+    color: #fff;
+}
+
+.btn-import:hover {
+    background: rgba(255,255,255,0.15);
+    color: #fff;
+}
+
+.btn-create {
+    background: var(--accent-orange);
+    color: #23180a;
+}
+
+.btn-create:hover {
+    filter: brightness(1.05);
+    color: #23180a;
+}
+
+.theme-toggle {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.08);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    border: none;
+    flex-shrink: 0;
+    font-size: 1.05rem;
+    cursor: pointer;
+}
+
+.theme-toggle:hover {
+    background: rgba(255,255,255,0.15);
+    color: #fff;
 }
 
 /* Menu utilisateur */
-.user-menu {
+.user-chip {
     display: flex;
     align-items: center;
-    gap: 0.75rem;
-    padding: 0.5rem 1rem;
-    border-radius: 12px;
-    background: var(--surface-color);
-    cursor: pointer;
-    transition: all 0.2s ease;
-}
-
-.user-menu:hover {
-    background: var(--surface-hover);
+    gap: 10px;
 }
 
 .user-avatar {
-    width: 36px;
-    height: 36px;
+    width: 42px;
+    height: 42px;
     border-radius: 50%;
-    overflow: hidden;
-}
-
-.user-avatar img {
-    width: 100%;
-    height: 100%;
     object-fit: cover;
+    flex-shrink: 0;
 }
 
-.user-info {
+.user-name {
+    color: #fff;
+    font-weight: 700;
+    font-size: 0.9rem;
     display: flex;
-    flex-direction: column;
-    line-height: 1.2;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
 }
 
-.user-info span {
-    font-size: 0.875rem;
-    font-weight: 600;
-    color: var(--text-color);
-}
-
-.user-info small {
-    font-size: 0.6875rem;
-    color: var(--text-muted-custom);
-}
-
-.user-dropdown-icon {
+.user-email {
+    color: #9AA5AC;
     font-size: 0.75rem;
-    color: var(--text-muted-custom);
-    transition: transform 0.2s ease;
+    white-space: nowrap;
 }
 
-.user-menu:hover .user-dropdown-icon {
-    transform: rotate(180deg);
-}
-
-/* Recherche mobile (cachée par défaut) */
+/* Barre de recherche mobile */
 .mobile-search {
-    display: none;
-    width: 100%;
-    margin-top: 0.75rem;
+    position: relative;
 }
 
-.mobile-search-input {
-    width: 100%;
+.mobile-search .form-control {
+    background: var(--search-bg);
+    border: none;
+    color: #fff;
+    border-radius: 999px;
+    padding: 10px 18px 10px 42px;
+    font-size: 0.88rem;
 }
 
-/* ============================================
-   RESPONSIVE BREAKPOINTS
-   ============================================ */
+.mobile-search .search-icon {
+    position: absolute;
+    left: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--search-text);
+}
 
-/* Tablette (768px - 1024px) */
-@media (max-width: 1024px) {
-    .layout-header {
-        padding: 0.75rem 1rem;
+@media (max-width: 991px) {
+    .topbar-brand {
+        width: auto;
     }
-
-    .user-info {
-        display: none;
+    .app-shell.collapsed .topbar-brand {
+        width: auto;
     }
-
-    .user-menu {
-        padding: 0.5rem;
-    }
-
-    .user-dropdown-icon {
-        display: none;
-    }
-
-    .header-search-wrapper {
-        max-width: 300px;
+    .app-shell.collapsed .brand-text {
+        opacity: 1;
+        width: auto;
     }
 }
 
-/* Mobile (moins de 768px) */
 @media (max-width: 768px) {
-    .layout-header {
+    .topbar {
         flex-wrap: wrap;
-        padding: 0.75rem 1rem;
+        padding: 10px 12px;
     }
-
-    .header-left {
-        flex: 0 0 auto;
+    .topbar-right {
+        gap: 8px;
     }
-
-    .header-menu-btn {
-        display: flex;
-    }
-
-    .header-brand-text {
-        display: flex;
-    }
-
-    .header-search-wrapper {
-        display: none;
-    }
-
-    .mobile-search {
-        display: block;
-    }
-
-    .header-actions {
-        gap: 0.5rem;
-    }
-
-    .header-action-btn {
+    .theme-toggle {
         width: 36px;
         height: 36px;
     }
-
     .user-avatar {
-        width: 32px;
-        height: 32px;
+        width: 36px;
+        height: 36px;
     }
-}
-
-/* Petit mobile (moins de 480px) */
-@media (max-width: 480px) {
-    .layout-header {
-        padding: 0.625rem 0.875rem;
-    }
-
-    .header-brand-text strong {
-        font-size: 0.875rem;
-    }
-
-    .header-brand-text span {
-        font-size: 0.6875rem;
-    }
-
-    .header-action-btn {
-        width: 32px;
-        height: 32px;
-    }
-
-    .header-action-btn i {
-        font-size: 0.875rem;
-    }
-
-    .user-avatar {
-        width: 28px;
-        height: 28px;
-    }
-
-    .notification-badge {
-        font-size: 0.5rem;
-        min-width: 14px;
-        height: 14px;
-        top: -2px;
-        right: -2px;
-    }
-
-    .mobile-search {
-        margin-top: 0.5rem;
-    }
-}
-
-/* Animations */
-@keyframes slideDown {
-    from {
-        opacity: 0;
-        transform: translateY(-10px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-.mobile-search {
-    animation: slideDown 0.3s ease;
 }
 </style>

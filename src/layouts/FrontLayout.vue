@@ -2,10 +2,7 @@
 // @ts-nocheck
 
 import { onMounted, ref, provide, watch } from 'vue'
-import { useRouter } from 'vue-router'
-import BaseButton from '../components/base/BaseButton.vue'
 import FrontHeader from '../components/partials/FrontHeader.vue'
-import FrontFooter from '../components/partials/FrontFooter.vue'
 import BaseToast from '../components/base/BaseToast.vue'
 import { useToast } from '../composables/useToast'
 
@@ -16,15 +13,6 @@ const theme = ref(
 
 const toastRef = ref(null)
 const { setToastInstance } = useToast()
-const router = useRouter()
-
-const props = defineProps({
-    showBackButton: { type: Boolean, default: true }
-})
-
-const goBack = () => {
-    router.back()
-}
 
 const applyTheme = (value) => {
     document.documentElement.dataset.theme = value
@@ -48,32 +36,26 @@ onMounted(() => {
 </script>
 
 <template>
-    <div class="front-layout d-flex flex-column min-vh-100 bg-body">
-        <FrontHeader />
-
-        <main class="front-main flex-grow-1 container py-5">
-            <div class="mb-3">
-                <BaseButton v-if="props.showBackButton" type="button" variant="secondary" icon="bi bi-arrow-left" size="sm" @click="goBack">Retour</BaseButton>
-            </div>
+    <!-- Layout identique à la référence TalentaSync -->
+    <div class="app-shell">
+        <FrontHeader>
             <slot />
-        </main>
-
-        <FrontFooter />
+        </FrontHeader>
     </div>
 
     <BaseToast ref="toastRef" />
 </template>
 
 <style scoped>
-.front-main {
-    width: 100%;
+.app-shell {
+    display: grid;
+    grid-template-columns: 260px 1fr;
+    min-height: 100vh;
 }
 
-.front-layout {
-    background-color: var(--surface-color) !important;
-}
-
-* {
-    color: var(--text-color);
+@media (max-width: 991px) {
+    .app-shell {
+        grid-template-columns: 1fr;
+    }
 }
 </style>

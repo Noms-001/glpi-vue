@@ -61,72 +61,76 @@ onMounted(() => {
 </script>
 
 <template>
-    <div class="base-layout"
-        :class="{ 'sidebar-collapsed': sidebarCollapsed, 'mobile-sidebar-open': mobileSidebarOpen }">
-        <div v-if="mobileSidebarOpen" class="layout-backdrop" @click="closeMobileSidebar"></div>
+    <div class="app-shell"
+        :class="{ 
+            'collapsed': sidebarCollapsed, 
+            'mobile-sidebar-open': mobileSidebarOpen 
+        }">
+        
+        <Navbar v-if="!isStandalonePage" v-model:searchQuery="searchQuery" />
 
-        <Sidebar />
+        <div class="app-body">
+            <div v-if="mobileSidebarOpen" class="layout-backdrop" @click="closeMobileSidebar"></div>
+            
+            <Sidebar />
 
-        <div class="layout-main">
-            <Navbar v-if="!isStandalonePage" v-model:searchQuery="searchQuery" />
-
-            <main class="layout-content">
+            <main class="main-content">
                 <slot />
             </main>
-
-            <Footer v-if="!isStandalonePage" />
         </div>
+
+        <Footer v-if="!isStandalonePage" />
     </div>
 
     <BaseToast ref="toastRef" />
 </template>
 
 <style scoped>
-.base-layout {
+.app-shell {
     min-height: 100vh;
+    background: var(--bg);
+    color: var(--text-main);
+    transition: background .25s ease, color .25s ease;
+}
+
+.app-body {
     display: flex;
-    background: var(--bg-color);
-    color: var(--text-color);
+    align-items: flex-start;
 }
 
 .layout-backdrop {
     position: fixed;
     inset: 0;
-    background: rgba(8, 15, 31, 0.32);
-    backdrop-filter: blur(2px);
-    z-index: 19;
+    background: rgba(12, 18, 22, 0.6);
+    backdrop-filter: blur(3px);
+    z-index: 59;
+    display: none;
 }
 
-.layout-main {
-    margin-left: 280px;
-    width: calc(100% - 280px);
-    min-height: 100vh;
-    transition: margin-left var(--transition-normal), width var(--transition-normal);
-    display: flex;
-    flex-direction: column;
-}
-
-.sidebar-collapsed .layout-main {
-    margin-left: 92px;
-    width: calc(100% - 92px);
-}
-
-.layout-content {
+.main-content {
+    padding: 28px 32px 40px 32px;
     flex: 1;
-    padding: 3rem;
+    min-width: 0;
+    transition: margin-left .25s ease;
 }
 
-@media (max-width: 1100px) {
-    .layout-main {
-        margin-left: 92px;
-        width: calc(100% - 92px);
+.app-shell.collapsed .main-content {
+    margin-left: var(--sidebar-w-collapsed);
+}
+
+@media (max-width: 991px) {
+    .main-content {
+        margin-left: 0 !important;
+    }
+    
+    .layout-backdrop {
+        display: block;
     }
 }
 
-@media (max-width: 992px) {
-    .layout-main {
-        margin-left: 0;
-        width: 100%;
+@media (max-width: 768px) {
+    .main-content {
+        padding: 20px 16px 30px 16px;
     }
 }
 </style>

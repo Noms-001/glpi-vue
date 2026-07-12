@@ -13,12 +13,12 @@ defineProps({
     },
 
     variant: {
-        type: String,
+        type: String as PropType<'primary' | 'secondary' | 'outline-secondary' | 'success' | 'danger' | 'warning' | 'ghost'>,
         default: 'primary'
     },
 
     size: {
-        type: String,
+        type: String as PropType<'sm' | 'md' | 'lg'>,
         default: 'md'
     },
 
@@ -42,6 +42,11 @@ defineProps({
         default: 'button'
     },
 
+    pill: {
+        type: Boolean,
+        default: false
+    },
+
     customClass: {
         type: [String, Array, Object],
         default: ''
@@ -50,108 +55,294 @@ defineProps({
 </script>
 
 <template>
-    <button :type="type" :disabled="disabled || loading" :title="title" :class="[
-        'base-btn',
-        `base-btn--${variant}`,
-        `base-btn--${size}`,
-        customClass,
-        'no-row-click'
-    ]">
-        <span v-if="loading" class="spinner"></span>
+    <button 
+        :type="type" 
+        :disabled="disabled || loading" 
+        :title="title" 
+        :class="[
+            'btn-custom',
+            `btn-${variant}`,
+            `btn-${size}`,
+            {
+                'btn-pill': pill,
+                'btn-loading': loading,
+                'btn-icon-only': !label && !$slots.default && icon
+            },
+            customClass,
+            'no-row-click'
+        ]"
+    >
+        <!-- Spinner de chargement -->
+        <span v-if="loading" class="btn-spinner">
+            <span class="spinner-dot"></span>
+            <span class="spinner-dot"></span>
+            <span class="spinner-dot"></span>
+        </span>
 
         <template v-else>
-            <i v-if="icon" :class="icon"></i>
+            <i v-if="icon" :class="icon" class="btn-icon"></i>
             <template v-if="$slots.default">
                 <slot />
             </template>
-            <template v-else>
-                {{ label }}
+            <template v-else-if="label">
+                <span class="btn-label">{{ label }}</span>
             </template>
         </template>
     </button>
 </template>
 
 <style scoped>
-.base-btn {
+/* ============ BASE ============ */
+.btn-custom {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 0.65rem;
-    border-radius: var(--radius-lg);
-    border: 1px solid transparent;
-    background: var(--primary-color);
-    color: #fff;
-    font-weight: 700;
+    gap: 0.5rem;
+    border: 1.5px solid transparent;
+    font-family: var(--font-family);
+    font-weight: 600;
     letter-spacing: 0.01em;
-    transition: transform var(--transition-fast), box-shadow var(--transition-fast), filter var(--transition-fast);
-    box-shadow: var(--shadow-sm);
     cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+    overflow: hidden;
+    text-decoration: none;
+    white-space: nowrap;
+    user-select: none;
 }
 
-.base-btn:hover:not(:disabled) {
-    transform: translateY(-1px);
-    filter: brightness(1.05);
+.btn-custom:active:not(:disabled) {
+    transform: scale(0.97);
 }
 
-.base-btn:disabled {
-    opacity: 0.72;
+.btn-custom:disabled {
+    opacity: 0.5;
     cursor: not-allowed;
-    filter: none;
+    pointer-events: none;
 }
 
-.base-btn--sm {
-    padding: 0.5rem 1.1rem;
-    font-size: 0.85rem;
+/* ============ SIZES ============ */
+.btn-sm {
+    padding: 0.5rem 1rem;
+    font-size: 0.8rem;
+    border-radius: 8px;
 }
 
-.base-btn--md {
-    padding: 0.75rem 1.5rem;
-    font-size: 0.95rem;
+.btn-md {
+    padding: 0.65rem 1.25rem;
+    font-size: 0.88rem;
+    border-radius: 10px;
 }
 
-.base-btn--lg {
-    padding: 1rem 1.9rem;
-    font-size: 1rem;
+.btn-lg {
+    padding: 0.8rem 1.5rem;
+    font-size: 0.92rem;
+    border-radius: 12px;
 }
 
-.base-btn--primary {
-    background: var(--primary-color);
+/* Pill style */
+.btn-pill {
+    border-radius: 999px !important;
 }
 
-.base-btn--secondary {
+/* Icon only */
+.btn-icon-only {
+    padding: 0.65rem;
+    min-width: 42px;
+    min-height: 42px;
+}
+
+.btn-icon-only.btn-sm {
+    padding: 0.45rem;
+    min-width: 34px;
+    min-height: 34px;
+}
+
+.btn-icon-only.btn-lg {
+    padding: 0.75rem;
+    min-width: 50px;
+    min-height: 50px;
+}
+
+/* ============ VARIANTS ============ */
+
+/* Primary */
+.btn-primary {
+    background: var(--brand-green);
+    border-color: var(--brand-green);
+    color: #FFFFFF;
+    box-shadow: 0 2px 8px rgba(14, 59, 54, 0.2);
+}
+
+.btn-primary:hover:not(:disabled) {
+    background: #0a2e2a;
+    border-color: #0a2e2a;
+    box-shadow: 0 4px 16px rgba(14, 59, 54, 0.3);
+    transform: translateY(-1px);
+}
+
+/* Secondary */
+.btn-secondary {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.12);
+    color: #FFFFFF;
+}
+
+.btn-secondary:hover:not(:disabled) {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.2);
+    transform: translateY(-1px);
+}
+
+/* Outline Secondary */
+.btn-outline-secondary {
     background: transparent;
-    color: var(--secondary-color);
-    border: 2px solid var(--secondary-color);
+    border-color: var(--border-color);
+    color: var(--text-main);
 }
 
-.base-btn--secondary:hover:not(:disabled) {
-    background: rgba(124, 58, 237, 0.12);
+.btn-outline-secondary:hover:not(:disabled) {
+    background: var(--pill-bg);
+    border-color: var(--text-muted);
+    transform: translateY(-1px);
 }
 
-.base-btn--success {
+/* Success */
+.btn-success {
     background: var(--success-color);
+    border-color: var(--success-color);
+    color: #FFFFFF;
+    box-shadow: 0 2px 8px rgba(16, 185, 129, 0.2);
 }
 
-.base-btn--danger {
+.btn-success:hover:not(:disabled) {
+    filter: brightness(1.1);
+    box-shadow: 0 4px 16px rgba(16, 185, 129, 0.3);
+    transform: translateY(-1px);
+}
+
+/* Danger */
+.btn-danger {
     background: var(--danger-color);
+    border-color: var(--danger-color);
+    color: #FFFFFF;
+    box-shadow: 0 2px 8px rgba(239, 68, 68, 0.2);
 }
 
-.spinner {
-    width: 16px;
-    height: 16px;
-    border: 2px solid rgba(255, 255, 255, 0.8);
-    border-top-color: transparent;
+.btn-danger:hover:not(:disabled) {
+    background: #dc2626;
+    border-color: #dc2626;
+    box-shadow: 0 4px 16px rgba(239, 68, 68, 0.35);
+    transform: translateY(-1px);
+}
+
+/* Warning */
+.btn-warning {
+    background: var(--accent-orange);
+    border-color: var(--accent-orange);
+    color: #23180a;
+    box-shadow: 0 2px 8px rgba(244, 169, 80, 0.25);
+}
+
+.btn-warning:hover:not(:disabled) {
+    filter: brightness(1.05);
+    box-shadow: 0 4px 16px rgba(244, 169, 80, 0.35);
+    transform: translateY(-1px);
+}
+
+/* Ghost */
+.btn-ghost {
+    background: transparent;
+    border-color: transparent;
+    color: var(--text-main);
+}
+
+.btn-ghost:hover:not(:disabled) {
+    background: var(--pill-bg);
+    transform: translateY(-1px);
+}
+
+/* ============ ICON ============ */
+.btn-icon {
+    font-size: 1.1em;
+    line-height: 1;
+}
+
+.btn-sm .btn-icon {
+    font-size: 1em;
+}
+
+.btn-lg .btn-icon {
+    font-size: 1.2em;
+}
+
+/* ============ LOADING SPINNER ============ */
+.btn-loading {
+    pointer-events: none;
+}
+
+.btn-spinner {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.spinner-dot {
+    width: 6px;
+    height: 6px;
     border-radius: 50%;
-    animation: spin 0.8s linear infinite;
+    background: currentColor;
+    animation: bounce 1.4s ease-in-out infinite both;
 }
 
-@keyframes spin {
-    from {
-        transform: rotate(0deg);
-    }
+.spinner-dot:nth-child(1) {
+    animation-delay: -0.32s;
+}
 
-    to {
-        transform: rotate(360deg);
+.spinner-dot:nth-child(2) {
+    animation-delay: -0.16s;
+}
+
+.spinner-dot:nth-child(3) {
+    animation-delay: 0s;
+}
+
+@keyframes bounce {
+    0%, 80%, 100% {
+        transform: scale(0.6);
+        opacity: 0.5;
+    }
+    40% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+/* ============ RIPPLE EFFECT ============ */
+.btn-custom::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at center, rgba(255, 255, 255, 0.3) 0%, transparent 70%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.btn-custom:active::after {
+    opacity: 1;
+    transition: opacity 0s;
+}
+
+/* ============ RESPONSIVE ============ */
+@media (max-width: 768px) {
+    .btn-lg {
+        padding: 0.7rem 1.25rem;
+        font-size: 0.88rem;
+    }
+    
+    .btn-md {
+        padding: 0.55rem 1.1rem;
+        font-size: 0.85rem;
     }
 }
 </style>

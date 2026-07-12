@@ -112,7 +112,7 @@ const openImportModal = async () => {
     }
 
     isImporting.value = true
-    importLogs.value = ['🚀 Lancement de l’import de données...']
+    importLogs.value = ['🚀 Lancement de l\'import de données...']
     importProgress.value = 0
     importModalOpen.value = true
     startTimer('import')
@@ -207,149 +207,311 @@ onUnmounted(() => {
 
 <template>
     <BaseLayout>
-        <section class="section">
-            <header class="page-header">
-                <span class="eyebrow">Backoffice</span>
-                <h1 class="page-title">Import & reset de données</h1>
-                <p class="page-subtitle">Chargez des fichiers CSV et une archive ZIP d'images, puis lancez l'import.</p>
-            </header>
+        <!-- Page Header -->
+        <div class="mb-4">
+            <h1 class="page-title">Import & Reset</h1>
+            <p class="page-subtitle">Chargez des fichiers CSV et une archive ZIP d'images pour l'import.</p>
+        </div>
 
-            <!-- Deux sections côte à côte -->
-            <div class="row g-4">
-                <!-- Section Import -->
-                <div class="col-12 col-md-6">
-                    <div class="section-panel h-100">
-                        <h2>Import de données</h2>
-                        <p class="text-muted-custom mb-4">Sélectionnez vos fichiers CSV et l'archive ZIP contenant les images.
-                        </p>
-
-                        <div class="mb-4">
-                            <BaseInput v-model="csvFiles" type="file" label="Fichiers CSV" accept=".csv" multiple
-                                :customClass="'w-100'" />
-                            <small class="text-muted-custom mt-2 d-block">
-                                {{ csvFiles.length }} fichier(s) CSV sélectionné(s)
-                            </small>
+        <!-- Deux sections côte à côte -->
+        <div class="row g-4">
+            <!-- Section Import -->
+            <div class="col-12 col-lg-6">
+                <div class="card-custom h-100 d-flex flex-column">
+                    <div class="d-flex align-items-center gap-3 mb-4">
+                        <div class="stat-icon mb-0">
+                            <i class="bi bi-cloud-arrow-up-fill"></i>
                         </div>
-
-                        <div class="mb-4">
-                            <BaseInput v-model="imageZip" type="file" label="Archive ZIP (images)" accept=".zip"
-                                :customClass="'w-100'" />
-                            <small class="text-muted-custom mt-2 d-block">
-                                {{ imageZip ? imageZip.name : 'Aucun fichier ZIP sélectionné' }}
-                            </small>
-                        </div>
-
-                        <div class="d-flex flex-wrap gap-3">
-                            <BaseButton label="Importer les données" variant="primary"
-                                :disabled="csvFiles.length === 0 && !imageZip" @click="openImportModal" />
-                            <BaseButton label="Effacer la sélection" variant="secondary" @click="clearSelection" />
+                        <div>
+                            <h2 class="section-title mb-0">Import de données</h2>
                         </div>
                     </div>
-                </div>
+                    
+                    <p class="text-muted-custom mb-4">Sélectionnez vos fichiers CSV et l'archive ZIP contenant les images.</p>
 
-                <!-- Section Reset -->
-                <div class="col-12 col-md-6">
-                    <div class="section-panel h-100">
-                        <h2>Réinitialisation</h2>
-                        <p class="text-muted-custom mb-4">Remettez à zéro toutes les données du backoffice. Cette action est
-                            irréversible.</p>
-
-                        <div class="d-flex flex-column gap-3">
-                            <div class="alert alert-warning" role="alert">
-                                <i class="bi bi-exclamation-triangle"></i>
-                                <strong>Attention :</strong> Cette action supprimera définitivement toutes les données.
-                            </div>
-
-                            <BaseButton label="Réinitialiser toutes les données" variant="danger" size="lg"
-                                @click="openResetModal" class="w-100 col-6" />
-                                
+                    <div class="mb-4">
+                        <label class="form-label-custom mb-2">
+                            <i class="bi bi-file-earmark-spreadsheet me-2"></i>Fichiers CSV
+                        </label>
+                        <div class="file-upload-area">
+                            <BaseInput v-model="csvFiles" type="file" accept=".csv" multiple :customClass="'w-100'" />
                         </div>
+                        <div class="file-count-badge mt-2" v-if="csvFiles.length > 0">
+                            <i class="bi bi-check-circle-fill"></i>
+                            {{ csvFiles.length }} fichier(s) CSV sélectionné(s)
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label-custom mb-2">
+                            <i class="bi bi-file-zip me-2"></i>Archive ZIP (images)
+                        </label>
+                        <div class="file-upload-area">
+                            <BaseInput v-model="imageZip" type="file" accept=".zip" :customClass="'w-100'" />
+                        </div>
+                        <div class="file-count-badge zip mt-2" v-if="imageZip">
+                            <i class="bi bi-check-circle-fill"></i>
+                            {{ imageZip.name }}
+                        </div>
+                    </div>
+
+                    <div class="mt-auto d-flex flex-wrap gap-3">
+                        <BaseButton label="Importer les données" variant="primary"
+                            :disabled="csvFiles.length === 0 && !imageZip" @click="openImportModal">
+                            <i class="bi bi-upload me-2"></i> Importer les données
+                        </BaseButton>
+                        <BaseButton label="Effacer la sélection" variant="outline-secondary" @click="clearSelection">
+                            <i class="bi bi-x-circle me-2"></i> Effacer la sélection
+                        </BaseButton>
                     </div>
                 </div>
             </div>
 
-            <!-- Modal Import -->
-            <BaseModal title="Import de données" v-model="importModalOpen" size="lg">
-                <div class="modal-timer" v-if="importModalOpen">
-                    <i class="bi bi-hourglass-split"></i>
-                    Temps écoulé : {{ formatTime(importElapsedSeconds) }}
-                </div>
-                <BaseProgressBar label="Import en cours" :value="importProgress" variant="primary" :logs="importLogs" />
-                <template #footer>
-                    <BaseButton label="Fermer" variant="secondary" @click="importModalOpen = false" />
-                </template>
-            </BaseModal>
+            <!-- Section Reset -->
+            <div class="col-12 col-lg-6">
+                <div class="card-custom h-100 d-flex flex-column">
+                    <div class="d-flex align-items-center gap-3 mb-4">
+                        <div class="stat-icon mb-0" style="color: var(--danger-color);">
+                            <i class="bi bi-exclamation-triangle-fill"></i>
+                        </div>
+                        <div>
+                            <h2 class="section-title mb-0">Réinitialisation</h2>
+                        </div>
+                    </div>
+                    
+                    <p class="text-muted-custom mb-4">Remettez à zéro toutes les données du backoffice. Cette action est irréversible.</p>
 
-            <!-- Modal Reset -->
-            <BaseModal title="Réinitialisation" v-model="resetModalOpen" size="lg">
-                <div class="modal-timer" v-if="resetModalOpen">
-                    <i class="bi bi-hourglass-split"></i>
-                    Temps écoulé : {{ formatTime(resetElapsedSeconds) }}
+                    <div class="warning-card mb-4">
+                        <div class="d-flex gap-3">
+                            <div class="warning-icon">
+                                <i class="bi bi-shield-exclamation"></i>
+                            </div>
+                            <div>
+                                <strong>Attention</strong>
+                                <p class="mb-0 mt-1">Cette action supprimera définitivement toutes les données. Assurez-vous d'avoir une sauvegarde avant de continuer.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-auto">
+                        <BaseButton label="Réinitialiser toutes les données" variant="danger" size="lg"
+                            @click="openResetModal" class="w-100">
+                            <i class="bi bi-arrow-repeat me-2"></i> Réinitialiser toutes les données
+                        </BaseButton>
+                    </div>
                 </div>
-                <BaseProgressBar label="Réinitialisation en cours" :value="resetProgress" variant="danger"
-                    :logs="resetLogs" />
-                <template #footer>
-                    <BaseButton label="Fermer" variant="secondary" @click="resetModalOpen = false" />
-                </template>
-            </BaseModal>
-        </section>
+            </div>
+        </div>
+
+        <!-- Modal Import -->
+        <BaseModal title="Import de données" v-model="importModalOpen" size="lg">
+            <div class="modal-header-custom" v-if="importModalOpen">
+                <div class="modal-timer">
+                    <i class="bi bi-hourglass-split"></i>
+                    <span>Temps écoulé : <strong>{{ formatTime(importElapsedSeconds) }}</strong></span>
+                </div>
+            </div>
+            <BaseProgressBar label="Import en cours" :value="importProgress" variant="primary" :logs="importLogs" />
+            <template #footer>
+                <BaseButton label="Fermer" variant="outline-secondary" @click="importModalOpen = false" />
+            </template>
+        </BaseModal>
+
+        <!-- Modal Reset -->
+        <BaseModal title="Réinitialisation" v-model="resetModalOpen" size="lg">
+            <div class="modal-header-custom" v-if="resetModalOpen">
+                <div class="modal-timer danger">
+                    <i class="bi bi-hourglass-split"></i>
+                    <span>Temps écoulé : <strong>{{ formatTime(resetElapsedSeconds) }}</strong></span>
+                </div>
+            </div>
+            <BaseProgressBar label="Réinitialisation en cours" :value="resetProgress" variant="danger"
+                :logs="resetLogs" />
+            <template #footer>
+                <BaseButton label="Fermer" variant="outline-secondary" @click="resetModalOpen = false" />
+            </template>
+        </BaseModal>
     </BaseLayout>
 </template>
 
 <style scoped>
-.alert {
-    padding: 1rem;
-    border-radius: 0.375rem;
+/* Page Header */
+.page-title {
+    font-size: 1.7rem;
+    margin-bottom: 2px;
+    font-weight: 800;
+    color: var(--text-main);
 }
 
-.alert-warning {
-    background-color: #fff3cd;
-    border: 1px solid #ffeeba;
-    color: #856404;
+.page-subtitle {
+    color: var(--text-muted);
+    font-size: 0.92rem;
+    font-weight: 500;
+    margin: 0;
 }
 
-.alert i {
-    margin-right: 0.5rem;
+/* Cards */
+.card-custom {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    box-shadow: var(--shadow-card);
+    padding: 28px;
+    transition: box-shadow .2s ease;
 }
 
-/* Timer styling */
+.card-custom:hover {
+    box-shadow: var(--shadow-md);
+}
+
+/* Section Title */
+.section-title {
+    font-size: 1.35rem;
+    font-weight: 800;
+    margin-bottom: 2px;
+    color: var(--text-main);
+}
+
+.stat-icon {
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    background: var(--pill-bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.15rem;
+    color: var(--brand-green);
+    flex-shrink: 0;
+}
+
+/* Form Labels */
+.form-label-custom {
+    font-weight: 600;
+    font-size: 0.88rem;
+    color: var(--text-main);
+    display: flex;
+    align-items: center;
+}
+
+.form-label-custom i {
+    color: var(--text-muted);
+}
+
+/* File Upload Area */
+.file-upload-area {
+    background: var(--bg);
+    border: 2px dashed var(--border-color);
+    border-radius: 12px;
+    padding: 16px;
+    transition: border-color .2s ease, background .2s ease;
+}
+
+.file-upload-area:hover {
+    border-color: var(--brand-green);
+    background: var(--brand-green-light);
+}
+
+/* File Count Badge */
+.file-count-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    border-radius: 999px;
+    background: var(--brand-green-light);
+    color: var(--brand-green);
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.file-count-badge.zip {
+    background: rgba(244, 169, 80, 0.12);
+    color: var(--accent-orange);
+}
+
+.file-count-badge i {
+    font-size: 0.75rem;
+}
+
+/* Warning Card */
+.warning-card {
+    background: rgba(239, 68, 68, 0.08);
+    border: 1px solid rgba(239, 68, 68, 0.2);
+    border-radius: 14px;
+    padding: 18px;
+    color: var(--danger-color);
+}
+
+.warning-card strong {
+    font-size: 0.95rem;
+    font-weight: 700;
+}
+
+.warning-card p {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+}
+
+.warning-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    background: rgba(239, 68, 68, 0.12);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    flex-shrink: 0;
+}
+
+/* Modal Timer */
+.modal-header-custom {
+    margin-bottom: 1rem;
+}
+
 .modal-timer {
     display: inline-flex;
     align-items: center;
-    gap: 0.5rem;
-    padding: 0.5rem 1rem;
-    border: 2px solid var(--secondary-color);
-    color: var(--secondary-color);
-    border-radius: 2rem;
-    font-size: 0.875rem;
+    gap: 8px;
+    padding: 8px 18px;
+    border-radius: 999px;
+    background: var(--brand-green-light);
+    color: var(--brand-green);
+    font-size: 0.85rem;
     font-weight: 500;
-    margin-bottom: 1rem;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    width: fit-content;
+}
+
+.modal-timer.danger {
+    background: rgba(239, 68, 68, 0.1);
+    color: var(--danger-color);
 }
 
 .modal-timer i {
-    font-size: 1rem;
+    font-size: 0.95rem;
 }
 
-/* Enhanced logs preview styling - targets the logs container inside BaseProgressBar */
+.modal-timer strong {
+    font-weight: 700;
+}
+
+/* Logs Container */
 :deep(.logs-container) {
     max-height: 400px;
     overflow-y: auto;
-    background: #1e1e2e;
-    border-radius: 8px;
+    background: var(--bg);
+    border-radius: 12px;
     padding: 1rem;
     font-family: var(--font-family);
     font-size: 0.8125rem;
-    line-height: 1.5;
-    border: 1px solid #2d2d3d;
-    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.2);
+    line-height: 1.6;
+    border: 1px solid var(--border-color);
 }
 
 :deep(.logs-container .log-entry) {
-    padding: 0.25rem 0;
-    border-bottom: 1px solid #2d2d3d;
-    color: #e0e0e0;
+    padding: 4px 0;
+    border-bottom: 1px solid var(--border-color);
+    color: var(--text-main);
     white-space: pre-wrap;
     word-break: break-word;
 }
@@ -359,81 +521,79 @@ onUnmounted(() => {
 }
 
 :deep(.logs-container .log-entry:hover) {
-    background: #2a2a3a;
-    padding-left: 0.5rem;
+    background: var(--pill-bg);
+    border-radius: 4px;
+    padding-left: 8px;
     transition: all 0.2s ease;
 }
 
-/* Custom scrollbar for logs */
+/* Scrollbar */
 :deep(.logs-container::-webkit-scrollbar) {
-    width: 8px;
-    height: 8px;
+    width: 6px;
 }
 
 :deep(.logs-container::-webkit-scrollbar-track) {
-    background: #2d2d3d;
-    border-radius: 4px;
+    background: transparent;
 }
 
 :deep(.logs-container::-webkit-scrollbar-thumb) {
-    background: #667eea;
-    border-radius: 4px;
+    background: var(--border-color);
+    border-radius: 999px;
 }
 
 :deep(.logs-container::-webkit-scrollbar-thumb:hover) {
-    background: #764ba2;
+    background: var(--text-muted);
 }
 
-/* Log level colors */
-:deep(.log-entry[data-level="error"]),
-:deep(.log-entry:contains("❌")) {
-    color: #ff6b6b;
-}
-
-:deep(.log-entry:contains("✅")) {
-    color: #51cf66;
-}
-
-:deep(.log-entry:contains("⚠️")) {
-    color: #ffd43b;
-}
-
-:deep(.log-entry:contains("🚀")),
-:deep(.log-entry:contains("📊")) {
-    color: #74c0fc;
-    font-weight: 600;
-}
-
-/* Progress bar enhancement */
+/* Progress Bar */
 :deep(.progress) {
-    height: 1.5rem;
-    border-radius: 1rem;
-    background-color: #e9ecef;
+    height: 8px;
+    border-radius: 999px;
+    background: var(--pill-bg);
     overflow: hidden;
     margin-bottom: 1rem;
 }
 
 :deep(.progress-bar) {
-    border-radius: 1rem;
-    transition: width 0.3s ease;
-    font-weight: 500;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 0.8125rem;
+    border-radius: 999px;
+    transition: width 0.4s ease;
 }
 
-/* Responsive adjustments */
+/* Buttons */
+.btn-outline-secondary {
+    background: transparent;
+    border: 1px solid var(--border-color);
+    color: var(--text-main);
+}
+
+.btn-outline-secondary:hover {
+    background: var(--pill-bg);
+    border-color: var(--text-muted);
+}
+
+/* Responsive */
 @media (max-width: 768px) {
+    .card-custom {
+        padding: 20px;
+    }
+    
+    .section-title {
+        font-size: 1.2rem;
+    }
+    
+    .stat-icon {
+        width: 40px;
+        height: 40px;
+        font-size: 1rem;
+    }
+    
     :deep(.logs-container) {
         max-height: 300px;
         font-size: 0.75rem;
-        padding: 0.75rem;
     }
-
-    .modal-timer {
-        font-size: 0.75rem;
-        padding: 0.375rem 0.75rem;
+    
+    .warning-card {
+        padding: 14px;
     }
 }
 </style>

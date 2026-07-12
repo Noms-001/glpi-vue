@@ -1,7 +1,6 @@
 <script setup>
 import { inject } from 'vue'
 import { useRoute } from 'vue-router'
-import logo from '../../assets/logo.png'
 import { logout } from '../../api/auth'
 import router from '../../router'
 
@@ -12,167 +11,246 @@ const mobileSidebarOpen = inject('mobileSidebarOpen')
 const closeMobileSidebar = inject('closeMobileSidebar')
 
 const menuItems = [
-    { label: 'Dashboard', icon: 'bi bi-speedometer2', path: '/backoffice/dashboard' },
-    { label: 'Import / Reset', icon: 'bi bi-cloud-arrow-up-fill', path: '/backoffice/import' },
-    { label: 'Import Mouvement', icon: 'bi bi-cloud-arrow-up-fill', path: '/backoffice/import-mvt' },
-    { label: 'Tickets', icon: 'bi bi-ticket-detailed', path: '/backoffice/tickets' },
-    { label: 'Langue de statut', icon: 'bi bi-translate', path: '/backoffice/status-language' },
-    { label: 'Couleur de statut', icon: 'bi bi-droplet', path: '/backoffice/status-color' },
-    { label: 'Composants', icon: 'bi bi-grid-1x2', path: '/components-test' }
+    { 
+        label: 'Menu Principal', 
+        type: 'label',
+        items: [
+            { label: 'Dashboard', icon: 'bi bi-grid-1x2-fill', path: '/backoffice/dashboard' },
+            { label: 'Import / Reset', icon: 'bi bi-cloud-arrow-up-fill', path: '/backoffice/import' },
+            { label: 'Import Mouvement', icon: 'bi bi-arrow-left-right', path: '/backoffice/import-mvt' },
+        ]
+    },
+    { 
+        label: 'Gestion', 
+        type: 'label',
+        items: [
+            { label: 'Tickets', icon: 'bi bi-ticket-detailed', path: '/backoffice/tickets' },
+            { label: 'Langue de statut', icon: 'bi bi-translate', path: '/backoffice/status-language' },
+            { label: 'Couleur de statut', icon: 'bi bi-palette2', path: '/backoffice/status-color' },
+        ]
+    },
+    { 
+        label: 'Système', 
+        type: 'label',
+        items: [
+            { label: 'Composants', icon: 'bi bi-grid-1x2', path: '/components-test' },
+        ]
+    }
 ]
 </script>
 
 <template>
-    <aside class="layout-sidebar" :aria-hidden="mobileSidebarOpen ? 'false' : 'true'">
-        <div class="sidebar-brand" @click="toggleSidebar">
-            <img :src="logo" alt="GLPI Logo" class="sidebar-logo" />
-            <div class="brand-text" v-if="!sidebarCollapsed">
-                <span>GLPI</span>
-                <small>Admin moderne</small>
+    <aside class="sidebar" :aria-hidden="mobileSidebarOpen ? 'false' : 'true'">
+        <div class="sidebar-scroll">
+            <template v-for="section in menuItems" :key="section.label">
+                <div class="nav-label">
+                    <span>{{ section.label }}</span>
+                </div>
+                <router-link 
+                    v-for="item in section.items" 
+                    :key="item.path" 
+                    :to="item.path" 
+                    class="nav-link-custom"
+                    :class="{ active: route.path === item.path }" 
+                    :data-label="item.label"
+                    @click="closeMobileSidebar"
+                >
+                    <i :class="item.icon" aria-hidden="true"></i>
+                    <span class="nav-link-text">{{ item.label }}</span>
+                    <i class="bi bi-chevron-right chevron"></i>
+                </router-link>
+            </template>
+
+            <div class="mt-auto pt-3">
+                <button 
+                    type="button" 
+                    class="nav-link-custom w-100 logout-btn" 
+                    @click="logout(router)"
+                    data-label="Déconnexion"
+                >
+                    <i class="bi bi-box-arrow-right"></i>
+                    <span class="nav-link-text">Déconnexion</span>
+                </button>
             </div>
-        </div>
-
-        <nav class="sidebar-menu">
-            <router-link v-for="item in menuItems" :key="item.path" :to="item.path" class="sidebar-link"
-                :class="{ active: route.path === item.path }" @click="closeMobileSidebar">
-                <i :class="item.icon" aria-hidden="true"></i>
-                <span v-if="!sidebarCollapsed">{{ item.label }}</span>
-            </router-link>
-        </nav>
-
-        <div class="sidebar-footer">
-            <button type="button" class="sidebar-collapse-btn" @click="logout(router)" aria-label="Réduire la barre">
-                <i class="bi bi-box-arrow-right"></i>
-                <span v-if="!sidebarCollapsed">Déconnexion</span>
-            </button>
         </div>
     </aside>
 </template>
 
 <style scoped>
-.layout-sidebar {
-    position: fixed;
-    left: 0;
-    top: 0;
-    bottom: 0;
-    width: 280px;
+.sidebar {
     background: var(--sidebar-bg);
     border-right: 1px solid var(--border-color);
-    box-shadow: var(--shadow-sm);
-    padding: 1.5rem 1rem;
+    padding: 22px 16px;
+    position: sticky;
+    top: var(--topbar-h);
+    height: calc(100vh - var(--topbar-h));
+    overflow: hidden;
+    width: var(--sidebar-w);
+    flex-shrink: 0;
+    transition: width .25s ease, padding .25s ease;
+    z-index: 60;
+}
+
+.app-shell.collapsed .sidebar {
+    width: var(--sidebar-w-collapsed);
+    padding: 22px 14px;
+}
+
+.sidebar-scroll {
+    height: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
     display: flex;
     flex-direction: column;
-    gap: 1rem;
-    transition: width var(--transition-normal), transform var(--transition-normal), background var(--transition-normal);
-    z-index: 1000;
 }
 
-.sidebar-collapsed .layout-sidebar {
-    width: 92px;
-}
-
-.sidebar-brand {
-    display: flex;
-    align-items: center;
-    gap: 0.9rem;
-    cursor: pointer;
-}
-
-.sidebar-logo {
-    width: 44px;
-    height: 44px;
-    border-radius: 16px;
-    object-fit: cover;
-    background: rgba(255, 255, 255, 0.7);
-    padding: 0.3rem;
-}
-
-.brand-text {
-    display: flex;
-    flex-direction: column;
-    gap: 0.2rem;
-}
-
-.brand-text span {
+.nav-label {
+    font-size: 0.68rem;
     font-weight: 700;
-    letter-spacing: -0.02em;
+    letter-spacing: 0.08em;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    padding: 14px 10px 8px 10px;
+    white-space: nowrap;
+    overflow: hidden;
 }
 
-.brand-text small {
-    color: var(--text-muted-custom);
-    font-size: 0.82rem;
-}
-
-.sidebar-menu {
-    display: flex;
-    flex-direction: column;
-    gap: 0.35rem;
-    margin-top: 1rem;
-}
-
-.sidebar-link {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    padding: 0.95rem 1rem;
-    border-radius: var(--radius-lg);
-    color: var(--text-color);
-    transition: background var(--transition-fast), color var(--transition-fast), transform var(--transition-fast);
-    font-weight: 500;
-    text-decoration: none;
-}
-
-.sidebar-link i {
-    font-size: 1.2rem;
-    min-width: 24px;
+.app-shell.collapsed .nav-label {
     text-align: center;
+    padding-left: 0;
+    padding-right: 0;
 }
 
-.sidebar-link:hover,
-.sidebar-link.active {
-    background: rgba(79, 70, 229, 0.12);
-    color: var(--primary-color);
+.app-shell.collapsed .nav-label span {
+    display: none;
 }
 
-.sidebar-footer {
-    margin-top: auto;
-    border-top: 1px solid var(--border-color);
-    padding-top: 1rem;
-}
-
-.sidebar-collapse-btn {
-    width: 100%;
-    display: inline-flex;
+.nav-link-custom {
+    display: flex;
     align-items: center;
-    justify-content: center;
-    gap: 0.75rem;
-    padding: 0.9rem 1rem;
-    border: none;
-    border-radius: var(--radius-md);
-    background: var(--surface-color);
-    color: var(--text-color);
-    box-shadow: var(--shadow-sm);
-    transition: transform var(--transition-fast), background var(--transition-fast);
+    gap: 12px;
+    padding: 10px 12px;
+    border-radius: 10px;
+    color: var(--text-main);
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.9rem;
+    margin-bottom: 2px;
+    transition: background .15s ease, color .15s ease;
+    white-space: nowrap;
+    overflow: hidden;
     cursor: pointer;
+    border: none;
+    background: none;
+    width: 100%;
 }
 
-.sidebar-collapse-btn:hover {
-    transform: translateY(-1px);
+.nav-link-custom i {
+    font-size: 1.05rem;
+    width: 20px;
+    text-align: center;
+    color: var(--text-muted);
+    flex-shrink: 0;
+    transition: color .15s ease;
 }
 
-@media (max-width: 1100px) {
-    .sidebar-collapsed .layout-sidebar {
-        width: 92px;
+.nav-link-custom:hover {
+    background: var(--pill-bg);
+    color: var(--text-main);
+}
+
+.nav-link-custom.active {
+    background: var(--sidebar-active-bg);
+    color: var(--sidebar-active-text);
+}
+
+.nav-link-custom.active i {
+    color: var(--sidebar-active-text);
+}
+
+.nav-link-custom .chevron {
+    margin-left: auto;
+    font-size: 0.8rem;
+}
+
+.nav-link-text {
+    overflow: hidden;
+    transition: opacity .2s ease;
+}
+
+.app-shell.collapsed .nav-link-custom {
+    justify-content: center;
+    padding: 10px;
+}
+
+.app-shell.collapsed .nav-link-text,
+.app-shell.collapsed .chevron {
+    display: none;
+}
+
+/* Tooltip sur version réduite */
+.app-shell.collapsed .nav-link-custom {
+    position: relative;
+}
+
+.app-shell.collapsed .nav-link-custom:hover::after {
+    content: attr(data-label);
+    position: absolute;
+    left: calc(100% + 10px);
+    top: 50%;
+    transform: translateY(-50%);
+    background: var(--text-main);
+    color: var(--bg);
+    padding: 6px 10px;
+    border-radius: 6px;
+    font-size: 0.78rem;
+    white-space: nowrap;
+    z-index: 70;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
+
+.logout-btn {
+    color: var(--text-muted) !important;
+}
+
+.logout-btn:hover {
+    color: var(--danger-color) !important;
+}
+
+.logout-btn:hover i {
+    color: var(--danger-color) !important;
+}
+
+/* Scrollbar personnalisée */
+.sidebar-scroll::-webkit-scrollbar {
+    width: 6px;
+}
+
+.sidebar-scroll::-webkit-scrollbar-thumb {
+    background: var(--border-color);
+    border-radius: 999px;
+}
+
+.sidebar-scroll::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+@media (max-width: 991px) {
+    .sidebar {
+        position: fixed;
+        left: 0;
+        z-index: 60;
+        box-shadow: 0 0 24px rgba(0,0,0,0.2);
+        transform: translateX(-100%);
+        transition: transform .3s ease, width .25s ease;
     }
-}
-
-@media (max-width: 992px) {
-    .layout-sidebar {
-        transform: translateX(-110%);
-    }
-
-    .mobile-sidebar-open .layout-sidebar {
+    
+    .mobile-sidebar-open .sidebar {
         transform: translateX(0);
+    }
+    
+    .app-shell.collapsed .sidebar {
+        width: var(--sidebar-w);
     }
 }
 </style>
