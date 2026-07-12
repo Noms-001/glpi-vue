@@ -47,14 +47,9 @@ const goToBackoffice = () => {
         <router-link to="/tickets/costs" class="nav-link-custom" :class="{ active: isActive('/tickets/costs') }">
             <i class="bi bi-cash-coin"></i> Coûts
         </router-link>
-
-        <div class="nav-label">Préférences</div>
-        <a href="#" class="nav-link-custom">
-            <i class="bi bi-person-circle"></i> Profile
-        </a>
-        <a href="#" class="nav-link-custom">
-            <i class="bi bi-gear"></i> Settings
-        </a>
+        <router-link to="/tickets/sum-cost" class="nav-link-custom" :class="{ active: isActive('/tickets/costs') }">
+            <i class="bi bi-cash-coin"></i> Coûts combinés
+        </router-link>      
     </aside>
 
     <!-- ============ PARTIE DROITE (TOPBAR + CONTENU) ============ -->
