@@ -82,7 +82,7 @@ const openMobileSidebar = inject('openMobileSidebar')
     display: flex;
     align-items: center;
     gap: 18px;
-    position: sticky;
+    position: fixed;
     top: 0;
     z-index: 100;
     flex-wrap: wrap;
