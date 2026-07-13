@@ -223,6 +223,9 @@ const goToBackoffice = () => {
     padding: 14px 28px;
     display: flex;
     align-items: center;
+    position: fixed;
+    width: 100%;
+    z-index: 2000;
     gap: 20px;
 }
 
