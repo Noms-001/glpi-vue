@@ -9,6 +9,8 @@ export async function getItemsStats() {
         items.map(async ({ item, service }) => {
             const data = await service.getAll();
 
+            console.log(item, item.name)
+
             return {
                 name: item.name,
                 count: data.length
