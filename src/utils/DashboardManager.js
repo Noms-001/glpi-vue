@@ -6,13 +6,11 @@ import { ticketTypes } from "./TicketManager";
 
 export async function getItemsStats() {
     const byType = await Promise.all(
-        items.map(async ({ item, service }) => {
+        items.map(async ({ name, service }) => {
             const data = await service.getAll();
 
-            console.log(item, item.name)
-
             return {
-                name: item.name,
+                name: name,
                 count: data.length
             };
         })

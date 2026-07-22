@@ -18,10 +18,22 @@ import {
 } from "../services/BaseService";
 
 export const items = [
-    { item: Computer, service: computerService },
-    { item: Monitor, service: monitorService },
-    { item: Phone, service: phoneService }
-]
+    {
+        name: "Ordinateurs",
+        item: Computer,
+        service: computerService
+    },
+    {
+        name: "Moniteurs",
+        item: Monitor,
+        service: monitorService
+    },
+    {
+        name: "Téléphones",
+        item: Phone,
+        service: phoneService
+    }
+];
 
 const itemModels = {
     Computer: computerModelService,
