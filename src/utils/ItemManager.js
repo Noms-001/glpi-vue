@@ -20,16 +20,19 @@ import {
 export const items = [
     {
         name: "Ordinateurs",
+        type: "Computer",
         item: Computer,
         service: computerService
     },
     {
         name: "Moniteurs",
+        type: "Monitor",
         item: Monitor,
         service: monitorService
     },
     {
         name: "Téléphones",
+        type: "Phone",
         item: Phone,
         service: phoneService
     }
@@ -67,8 +70,8 @@ export async function getAllItems() {
     )
 
     const assets = await Promise.all(
-        items.map(async ({ item, service }) => ({
-            type: item.name,
+        items.map(async ({ type, service }) => ({
+            type: type,
             data: await service.getAll()
         }))
     )
