@@ -147,6 +147,8 @@ async function loadStats() {
             ...item,
             trend: Math.floor(Math.random() * 30) - 10 // Simulé
         }))
+
+        console.log(elementDetails.value)
         
         ticketDetails.value = ticketsStats.items.map(item => ({
             ...item,
